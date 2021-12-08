@@ -1,31 +1,40 @@
-import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:we_chat/persistence/hive_constants.dart';
 
 part 'user_vo.g.dart';
 
 @JsonSerializable(anyMap: true)
-@HiveType(typeId: hiveTypeIdUserVO, adapterName: "UserVOAdapter")
 class UserVO {
   @JsonKey(name: "id")
-  @HiveField(0)
-  int id;
+  String? id;
 
   @JsonKey(name: "userName")
-  @HiveField(1)
   String? userName;
 
+  @JsonKey(name: "email")
+  String? email;
+
+  @JsonKey(name: "password")
+  String? password;
+
+  @JsonKey(name: "phone")
+  String? phoneNumber;
+
+  @JsonKey(name: "region")
+  String? region;
+
   @JsonKey(name: "imagePath")
-  @HiveField(2)
   String? imagePath;
 
   @JsonKey(name: "organization")
-  @HiveField(3)
   String? organization;
 
   UserVO({
-    required this.id,
+    this.id,
     this.userName,
+    this.email,
+    this.password,
+    this.phoneNumber,
+    this.region,
     this.imagePath,
     this.organization,
   });

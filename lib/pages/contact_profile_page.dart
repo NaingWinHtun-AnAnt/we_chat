@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:we_chat/blocs/contact_profile_bloc.dart';
+import 'package:we_chat/data/vos/conversation_vo.dart';
+import 'package:we_chat/pages/chat_page.dart';
 import 'package:we_chat/resources/colors.dart';
 import 'package:we_chat/resources/dimens.dart';
 import 'package:we_chat/resources/strings.dart';
@@ -46,10 +48,15 @@ class ContactProfilePage extends StatelessWidget {
                 height: marginMedium,
               ),
               Consumer(
-                builder: (BuildContext context, value, Widget? child) =>
+                builder: (BuildContext context, ContactProfileBloc bloc,
+                        Widget? child) =>
                     RoundCornerButtonView(
                   text: messages,
-                  onTap: () {},
+                  onTap: () {
+                    bloc.onCreateNewConversation(userId).then(
+                          (value) => _navigateToChatPage(context, value),
+                        );
+                  },
                 ),
               ),
               const SizedBox(
@@ -62,6 +69,16 @@ class ContactProfilePage extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  void _navigateToChatPage(BuildContext context, ConversationVO conversation) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (BuildContext context) => ChatPage(
+          conversation: conversation,
         ),
       ),
     );

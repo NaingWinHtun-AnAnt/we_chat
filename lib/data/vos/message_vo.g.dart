@@ -9,7 +9,7 @@ part of 'message_vo.dart';
 MessageVO _$MessageVOFromJson(Map json) => MessageVO(
       id: json['id'] as int,
       message: json['message'] as String?,
-      userId: json['userId'] as int?,
+      userId: json['userId'] as String?,
       fileUrl: json['fileUrl'] as String?,
       isVideoFile: json['isVideoFile'] as bool? ?? false,
     );

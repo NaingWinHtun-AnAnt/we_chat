@@ -1,18 +1,9 @@
 import 'package:we_chat/data/vos/user_vo.dart';
 
 abstract class UserModel {
-  /// from network
-  Stream<List<UserVO>> getContactList();
+  /// get my data
+  Future<UserVO> getUser();
 
-  /// create contact
-  Future createContact(String? userId);
-
-  /// get User With Id
+  /// get scan user By id
   Stream<UserVO> getUserById(String userId);
-
-  /// local database(hive)
-  void createUser();
-
-  /// from database
-  Stream<UserVO?>? getUser();
 }

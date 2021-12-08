@@ -19,9 +19,12 @@ class RoundCornerButtonView extends StatelessWidget {
     return GestureDetector(
       onTap: () => onTap(),
       child: Container(
+        margin: const EdgeInsets.symmetric(
+          horizontal: marginMedium2,
+        ),
         padding: const EdgeInsets.symmetric(
           horizontal: marginXXLarge,
-          vertical: marginMedium,
+          vertical: marginCardMedium2,
         ),
         decoration: BoxDecoration(
           color: isGhostButton ? colorWhite : colorPrimary,
@@ -31,12 +34,14 @@ class RoundCornerButtonView extends StatelessWidget {
           ),
           borderRadius: BorderRadius.circular(buttonBorderRadius),
         ),
-        child: Text(
-          text ?? "-",
-          style: TextStyle(
-            fontSize: textRegular2x,
-            color: isGhostButton ? colorPrimary : colorWhite,
-            fontWeight: FontWeight.w600,
+        child: Center(
+          child: Text(
+            text ?? "-",
+            style: TextStyle(
+              fontSize: textRegular2x,
+              color: isGhostButton ? colorPrimary : colorWhite,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ),

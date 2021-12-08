@@ -9,6 +9,7 @@ import 'package:we_chat/resources/dimens.dart';
 import 'package:we_chat/resources/strings.dart';
 import 'package:we_chat/viewitems/selected_file_view.dart';
 import 'package:we_chat/widgets/image_view.dart';
+import 'package:we_chat/widgets/loading_view.dart';
 
 class AddNewMomentPage extends StatelessWidget {
   final int? momentId;
@@ -164,22 +165,6 @@ class AddNewMomentPage extends StatelessWidget {
           ),
           (result.files.first.extension ?? "") == "mp4");
     }
-  }
-}
-
-class LoadingView extends StatelessWidget {
-  const LoadingView({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.black45,
-      child: const Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
   }
 }
 

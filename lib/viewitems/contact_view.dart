@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:we_chat/data/vos/user_vo.dart';
+import 'package:we_chat/data/vos/contact_vo.dart';
 import 'package:we_chat/resources/dimens.dart';
 import 'package:we_chat/widgets/image_view.dart';
 
 class ContactView extends StatelessWidget {
-  final UserVO? contact;
+  final ContactVO? contact;
   final Function(String) onTap;
 
   const ContactView({
@@ -16,13 +16,17 @@ class ContactView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => onTap("${contact?.id ?? ""}"),
+      onTap: () => onTap(
+        contact?.id ?? "",
+      ),
       child: Container(
-        margin: const EdgeInsets.symmetric(
-          horizontal: marginMedium2,
+        color: Colors.white,
+        margin: const EdgeInsets.only(
+          bottom: marginMedium,
         ),
-        padding: const EdgeInsets.only(
-          bottom: marginMedium2,
+        padding: const EdgeInsets.symmetric(
+          vertical: marginMedium,
+          horizontal: marginMedium2,
         ),
         child: Row(
           children: [

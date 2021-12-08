@@ -11,7 +11,7 @@ class MessageVO {
   String? message;
 
   @JsonKey(name: "userId")
-  int? userId;
+  String? userId;
 
   @JsonKey(name: "fileUrl")
   String? fileUrl;
@@ -27,7 +27,7 @@ class MessageVO {
     this.isVideoFile = false,
   });
 
-  bool isMyMessage(int? myId) => userId == myId;
+  bool isMyMessage(String? myId) => userId == myId;
 
   factory MessageVO.fromJson(Map<String, dynamic> json) =>
       _$MessageVOFromJson(json);

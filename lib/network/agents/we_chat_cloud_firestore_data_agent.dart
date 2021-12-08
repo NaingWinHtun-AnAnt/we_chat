@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:we_chat/data/vos/comment_vo.dart';
+import 'package:we_chat/data/vos/contact_vo.dart';
 import 'package:we_chat/data/vos/like_vo.dart';
 import 'package:we_chat/data/vos/moment_vo.dart';
+import 'package:we_chat/data/vos/user_vo.dart';
 
 abstract class WeChatCloudFireStoreDataAgent {
   /// create moment
@@ -31,4 +33,28 @@ abstract class WeChatCloudFireStoreDataAgent {
 
   /// upload moment image
   Future<String> uploadFileToFirebaseStorage(File file, String folderName);
+
+  /// register with user info
+  Future registerNewUser(UserVO registerUser);
+
+  /// login with email and password
+  Future login(String email, String password);
+
+  /// check if user is currently login
+  bool isLogin();
+
+  /// get current login user info
+  Future<UserVO> getLoginUser();
+
+  /// get user by scan user id
+  Stream<UserVO> getUserById(String userId);
+
+  /// add contact
+  Future<void> addContact(String userId, ContactVO contact);
+
+  /// get contact list
+  Stream<List<ContactVO>> getContact(String userId);
+
+  /// logout
+  Future<void> logOut();
 }

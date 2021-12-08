@@ -6,7 +6,6 @@ import 'package:we_chat/data/models/moment_model_impl.dart';
 import 'package:we_chat/data/vos/comment_vo.dart';
 import 'package:we_chat/data/vos/like_vo.dart';
 import 'package:we_chat/data/vos/moment_vo.dart';
-import 'package:we_chat/dummy_data.dart';
 import 'package:we_chat/resources/strings.dart';
 
 class MomentBloc extends ChangeNotifier {
@@ -50,7 +49,7 @@ class MomentBloc extends ChangeNotifier {
     final dummyLike = LikeVO(
       id: DateTime.now().millisecondsSinceEpoch,
       userId: DateTime.now().millisecondsSinceEpoch,
-      userName: dummyUser.userName,
+      userName: "Naing Win Htun",
       imagePath: dummyNetworkImage,
     );
     _momentModel.addMomentLike(momentId, dummyLike);
@@ -61,7 +60,7 @@ class MomentBloc extends ChangeNotifier {
     /// dummy comment
     final dummyComment = CommentVO(
       id: DateTime.now().millisecondsSinceEpoch,
-      userName: dummyUser.userName,
+      userName: "Naing Win Htun",
       comment: "${Random().nextInt(100)} Ok!!",
     );
     _momentModel.addNewComment(momentId, dummyComment);

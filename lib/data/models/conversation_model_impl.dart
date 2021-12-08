@@ -15,8 +15,15 @@ class ConversationModelImpl extends ConversationModel {
 
   ConversationModelImpl._internal();
 
+  /// create conversation
   @override
-  Stream<List<ConversationVO>> getConversations(int userId) {
+  Future<void> createConversation(String userId, ConversationVO conversation) {
+    return _mDataAgent.createConversation(userId, conversation);
+  }
+
+  /// get conversation lists
+  @override
+  Stream<List<ConversationVO>> getConversations(String userId) {
     return _mDataAgent.getConversations(userId);
   }
 }

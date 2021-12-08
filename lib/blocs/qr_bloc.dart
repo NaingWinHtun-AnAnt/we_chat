@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
+import 'package:we_chat/data/models/contact_model.dart';
+import 'package:we_chat/data/models/contact_model_impl.dart';
 import 'package:we_chat/data/models/user_model.dart';
 import 'package:we_chat/data/models/user_model_impl.dart';
+import 'package:we_chat/data/vos/contact_vo.dart';
 import 'package:we_chat/data/vos/user_vo.dart';
 
 class QrBloc extends ChangeNotifier {
@@ -13,10 +16,11 @@ class QrBloc extends ChangeNotifier {
 
   /// model
   final UserModel _mUserModel = UserModelImpl();
+  final ContactModel _mContactModel = ContactModelImpl();
 
   QrBloc() {
-    _mUserModel.getUser()?.listen((event) {
-      user = event;
+    _mUserModel.getUser().then((value) {
+      user = value;
       _notifySafety();
     });
   }
@@ -26,8 +30,19 @@ class QrBloc extends ChangeNotifier {
     _notifySafety();
   }
 
-  Future<void> onCreateNewContact(String? userId) {
-    return _mUserModel.createContact(userId);
+  /// add friend
+  Future<void> onGetUserAndAddToContact(String userId) {
+    return _mUserModel.getUserById(userId).listen((event) {
+      _mContactModel.addContact(
+          user?.id ?? "",
+          ContactVO(
+            id: event.id ?? "",
+            userName: event.userName,
+            email: event.email,
+            imagePath: event.imagePath,
+            organization: event.organization,
+          ));
+    }).asFuture();
   }
 
   /// use notifyListener safely

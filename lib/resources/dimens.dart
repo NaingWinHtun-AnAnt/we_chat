@@ -26,6 +26,7 @@ const momentViewImageRadius = 12.0;
 const chatTextBorderRadius = 20.0;
 const profileImageSize = 100.0;
 const contactProfileImageSize = 80.0;
+const registerProfileImageSize = 72.0;
 const profileImagePadding = 6.0;
 const forwardIconSize = 20.0;
 const buttonBorderRadius = 20.0;

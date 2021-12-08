@@ -42,3 +42,49 @@ const weChatId = "WeChat ID";
 const region = "Region";
 const album = "Album";
 const from = "From";
+
+/// authentication
+const labelLogin = "Log In";
+const labelRegister = "Register";
+const signUp = "Sign Up";
+const signUpByPhoneNumber = "Sign up by phone number";
+const labelName = "Name";
+const hintName = "John Apex";
+const labelRegion = "Region";
+const labelPhone = "Phone";
+const hintPhone = "Enter mobile number";
+const labelPassword = "Password";
+const hintPassword = "Enter Password";
+const next = "Next";
+const ok = "Ok";
+const cancel = "Cancel";
+const otherLoginOptions = "Other Login Options";
+const unableToLogIn = "Unable to Log In?";
+const moreOptions = "More Options";
+
+/// sign up options
+const signUpViaMobile = "Sign up via Mobile";
+const signUpViaFacebook = "Sign up via Facebook";
+
+const labelEmail = "Email";
+const hintEmail = "Please enter your email";
+const labelUserName = "User Name";
+const labelAlreadyHaveAccount = "Already have an account?";
+const labelDoNotHaveAccount = "Don't have an account?";
+const labelOr = "OR";
+
+/// term of service
+const termOfService = "WeChat - Terms of Service";
+
+/// privacy
+const privacyPolicy = "Privacy Policy";
+const weChatPrivacyPolicy = "WECHAT PRIVACY POLICY";
+const loginViaMobileNumber = "Log In Via Mobile Number";
+
+/// email verification
+const emailVerification = "Email Verification";
+const emailVerificationInfo = "Enter verification information";
+
+/// image resources
+const takeFromCamera = "Take Picture";
+const selectFromGallery = "Select From Gallery";

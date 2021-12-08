@@ -8,12 +8,6 @@ import 'package:we_chat/network/agents/we_chat_real_time_database_data_agent.dar
 import 'package:we_chat/network/firebase_constants.dart';
 
 class RealTimeDatabaseDataAgentImpl extends WeChatRealTimeDatabaseDataAgent {
-  /// real time data reference
-  final _dbReference = FirebaseDatabase.instance.reference();
-
-  /// firebase storage
-  final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
-
   static final RealTimeDatabaseDataAgentImpl _singleton =
       RealTimeDatabaseDataAgentImpl._internal();
 
@@ -21,12 +15,31 @@ class RealTimeDatabaseDataAgentImpl extends WeChatRealTimeDatabaseDataAgent {
 
   RealTimeDatabaseDataAgentImpl._internal();
 
-  /// conversations
+  /// real time data reference
+  final _dbReference = FirebaseDatabase.instance.reference();
+
+  /// firebase storage
+  final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
+
+  /// create a blank conversation
   @override
-  Stream<List<ConversationVO>> getConversations(int userId) {
+  Future<void> createConversation(String userId, ConversationVO conversation) {
     return _dbReference
         .child(nodeUsers)
-        .child("$userId")
+        .child(userId)
+        .child(nodeChats)
+        .child("${conversation.id}")
+        .set(
+          conversation.toJson(),
+        );
+  }
+
+  /// conversations
+  @override
+  Stream<List<ConversationVO>> getConversations(String userId) {
+    return _dbReference
+        .child(nodeUsers)
+        .child(userId)
         .child(nodeChats)
         .onValue
         .map(
@@ -42,10 +55,10 @@ class RealTimeDatabaseDataAgentImpl extends WeChatRealTimeDatabaseDataAgent {
 
   /// chat
   @override
-  Stream<List<MessageVO>> getMessages(int conversationId, int userId) {
+  Stream<List<MessageVO>> getMessages(int conversationId, String userId) {
     return _dbReference
         .child(nodeUsers)
-        .child("$userId")
+        .child(userId)
         .child(nodeChats)
         .child("$conversationId")
         .child(nodeMessages)
@@ -61,10 +74,10 @@ class RealTimeDatabaseDataAgentImpl extends WeChatRealTimeDatabaseDataAgent {
 
   /// send message just message node
   @override
-  Future sendMessage(int conversationId, MessageVO message, int userId) {
+  Future sendMessage(int conversationId, MessageVO message, String userId) {
     return _dbReference
         .child(nodeUsers)
-        .child("$userId")
+        .child(userId)
         .child(nodeChats)
         .child("$conversationId")
         .child(nodeMessages)

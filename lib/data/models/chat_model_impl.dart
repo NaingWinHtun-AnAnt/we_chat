@@ -18,7 +18,7 @@ class ChatModelImpl extends ChatModel {
   ChatModelImpl._internal();
 
   @override
-  Stream<List<MessageVO>> getMessages(int conversationId, int userId) {
+  Stream<List<MessageVO>> getMessages(int conversationId, String userId) {
     return _mDataAgent.getMessages(conversationId, userId);
   }
 
@@ -29,7 +29,7 @@ class ChatModelImpl extends ChatModel {
     String? text,
     File? file,
     bool isVideoFile,
-    int userId,
+    String userId,
   ) {
     if (file != null) {
       return _mDataAgent
@@ -51,7 +51,7 @@ class ChatModelImpl extends ChatModel {
 
   Future<MessageVO> _craftMessageVO(
     int messageId,
-    int userId,
+    String userId,
     bool isVideoFile,
     String? text, {
     String? fileUrl,

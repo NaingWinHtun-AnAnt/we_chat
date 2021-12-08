@@ -4,6 +4,8 @@ import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:we_chat/blocs/my_profile_bloc.dart';
 import 'package:we_chat/data/vos/user_vo.dart';
+import 'package:we_chat/pages/qr_page.dart';
+import 'package:we_chat/pages/start_page.dart';
 import 'package:we_chat/resources/colors.dart';
 import 'package:we_chat/resources/dimens.dart';
 import 'package:we_chat/resources/strings.dart';
@@ -23,30 +25,51 @@ class MyProfilePage extends StatelessWidget {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              Selector(
-                selector: (BuildContext context, MyProfileBloc bloc) =>
-                    bloc.user,
+              Consumer(
                 builder: (
                   BuildContext context,
-                  UserVO? mUser,
+                  MyProfileBloc bloc,
                   Widget? child,
                 ) =>
                     UserInfoSectionView(
-                  user: mUser,
+                  user: bloc.user,
+                  onTapQrCode: () => _navigateToQRPage(context),
                 ),
               ),
               const UserDataView(),
               const SizedBox(
                 height: marginMedium2,
               ),
-              RoundCornerButtonView(
-                text: logOut,
-                isGhostButton: true,
-                onTap: () {},
+              Consumer(
+                builder:
+                    (BuildContext context, MyProfileBloc bloc, Widget? child) =>
+                        RoundCornerButtonView(
+                  text: logOut,
+                  isGhostButton: true,
+                  onTap: () => bloc.onTapLogout().then(
+                        (value) => _navigateToStartPage(context),
+                      ),
+                ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void _navigateToStartPage(BuildContext context) {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (BuildContext context) => const StartPage(),
+      ),
+    );
+  }
+
+  void _navigateToQRPage(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (BuildContext context) => const QrPage(),
       ),
     );
   }
@@ -88,10 +111,12 @@ class UserDataView extends StatelessWidget {
 
 class UserInfoSectionView extends StatelessWidget {
   final UserVO? user;
+  final Function onTapQrCode;
 
   const UserInfoSectionView({
     Key? key,
     required this.user,
+    required this.onTapQrCode,
   }) : super(key: key);
 
   @override
@@ -105,9 +130,10 @@ class UserInfoSectionView extends StatelessWidget {
         ),
         UserInfoAndForwardIconView(
           user: user,
+          onTapQrCode: () => onTapQrCode(),
         ),
-        const ProfileImageView(
-          imageUrl: dummyNetworkImage,
+        ProfileImageView(
+          imageUrl: user?.imagePath ?? dummyNetworkImage,
         ),
         SizedBox(
           width: double.infinity,
@@ -146,11 +172,13 @@ class RecentActivityTextView extends StatelessWidget {
 }
 
 class UserInfoAndForwardIconView extends StatelessWidget {
+  final Function onTapQrCode;
   final UserVO? user;
 
   const UserInfoAndForwardIconView({
     Key? key,
     required this.user,
+    required this.onTapQrCode,
   }) : super(key: key);
 
   @override
@@ -172,6 +200,12 @@ class UserInfoAndForwardIconView extends StatelessWidget {
             id: user?.id,
           ),
           const Spacer(),
+          GestureDetector(
+            onTap: () => onTapQrCode(),
+            child: const Icon(
+              Icons.all_inbox_outlined,
+            ),
+          ),
           const Icon(
             Icons.arrow_forward_ios_rounded,
             size: forwardIconSize,
@@ -184,7 +218,7 @@ class UserInfoAndForwardIconView extends StatelessWidget {
 
 class UserNameAndIdView extends StatelessWidget {
   final String? userName;
-  final int? id;
+  final String? id;
 
   const UserNameAndIdView({
     Key? key,
@@ -209,7 +243,7 @@ class UserNameAndIdView extends StatelessWidget {
           height: marginSmall,
         ),
         Text(
-          "${id ?? "-"}",
+          id ?? "-",
           style: const TextStyle(
             fontSize: textRegular,
             fontWeight: FontWeight.w700,

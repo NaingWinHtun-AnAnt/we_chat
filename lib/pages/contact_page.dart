@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:we_chat/blocs/contact_bloc.dart';
-import 'package:we_chat/data/vos/user_vo.dart';
+import 'package:we_chat/data/vos/contact_vo.dart';
 import 'package:we_chat/pages/contact_profile_page.dart';
 import 'package:we_chat/pages/qr_page.dart';
 import 'package:we_chat/resources/colors.dart';
@@ -61,7 +61,7 @@ class ContactPage extends StatelessWidget {
                     bloc.contacts,
                 builder: (
                   BuildContext context,
-                  List<UserVO>? contactList,
+                  List<ContactVO>? contactList,
                   Widget? child,
                 ) =>
                     VerticalListView(

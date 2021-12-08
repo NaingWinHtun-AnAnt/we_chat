@@ -1,8 +1,7 @@
-import 'package:stream_transform/stream_transform.dart';
 import 'package:we_chat/data/models/user_model.dart';
 import 'package:we_chat/data/vos/user_vo.dart';
-import 'package:we_chat/dummy_data.dart';
-import 'package:we_chat/persistence/daos/user_dao.dart';
+import 'package:we_chat/network/agents/cloud_fire_store_data_agent_impl.dart';
+import 'package:we_chat/network/agents/we_chat_cloud_firestore_data_agent.dart';
 
 class UserModelImpl extends UserModel {
   static final UserModelImpl _singleton = UserModelImpl._internal();
@@ -11,48 +10,19 @@ class UserModelImpl extends UserModel {
 
   UserModelImpl._internal();
 
-  /// daos
-  final UserDao _mUserDao = UserDao();
+  /// real time database
+  final WeChatCloudFireStoreDataAgent _dataAgent =
+      CloudFireStoreDataAgentImpl();
 
-  /// from network
+  /// get my user data
   @override
-  Stream<List<UserVO>> getContactList() {
-    return Stream.value([
-      UserVO(
-        id: 5668866,
-      ),
-    ]);
+  Future<UserVO> getUser() {
+    return _dataAgent.getLoginUser();
   }
 
-  /// get user by Id
+  /// get user by scan user id
   @override
   Stream<UserVO> getUserById(String userId) {
-    return Stream.value(
-      UserVO(
-        id: 5668866,
-      ),
-    );
-  }
-
-  @override
-  Future createContact(String? userId) {
-    return Future.value();
-  }
-
-  /// local database(hive)
-  @override
-  void createUser() {
-    _mUserDao.saveUser(dummyUser);
-  }
-
-  /// from database
-  @override
-  Stream<UserVO?>? getUser() {
-    return _mUserDao
-        .getUserEventStream()
-        .startWith(_mUserDao.getUserStream())
-        .map(
-          (event) => _mUserDao.getLoginUser(),
-        );
+    return _dataAgent.getUserById(userId);
   }
 }

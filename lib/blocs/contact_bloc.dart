@@ -1,24 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:we_chat/data/dummy_data.dart';
+import 'package:we_chat/data/models/contact_model.dart';
+import 'package:we_chat/data/models/contact_model_impl.dart';
 import 'package:we_chat/data/models/user_model.dart';
 import 'package:we_chat/data/models/user_model_impl.dart';
-import 'package:we_chat/data/vos/user_vo.dart';
+import 'package:we_chat/data/vos/contact_vo.dart';
 
 class ContactBloc extends ChangeNotifier {
   /// control dispose
   bool isDispose = false;
 
   /// states
-  List<UserVO>? contacts;
+  List<ContactVO>? contacts;
 
   /// models
-  final UserModel _mUserModel = UserModelImpl();
+  final ContactModel _contactModel = ContactModelImpl();
+  final UserModel _userModel = UserModelImpl();
 
   ContactBloc() {
-    _mUserModel.getContactList().listen((event) {
-      contacts = dummyContactList;
-      _notifySafety();
-    });
+    _userModel.getUser().then(
+          (value) => _contactModel.getContact(value.id ?? "").listen(
+            (event) {
+              contacts = event;
+              _notifySafety();
+            },
+          ),
+        );
   }
 
   /// use notifyListener safely

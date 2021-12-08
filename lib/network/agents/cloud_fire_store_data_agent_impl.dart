@@ -1,26 +1,32 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:we_chat/data/vos/comment_vo.dart';
+import 'package:we_chat/data/vos/contact_vo.dart';
 import 'package:we_chat/data/vos/like_vo.dart';
 import 'package:we_chat/data/vos/moment_vo.dart';
+import 'package:we_chat/data/vos/user_vo.dart';
 import 'package:we_chat/network/agents/we_chat_cloud_firestore_data_agent.dart';
 import 'package:we_chat/network/firebase_constants.dart';
 
 class CloudFireStoreDataAgentImpl extends WeChatCloudFireStoreDataAgent {
-  /// Firebase Firestore instance
-  final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
-
-  /// firebase storage
-  final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
-
   static final CloudFireStoreDataAgentImpl _singleton =
       CloudFireStoreDataAgentImpl._internal();
 
   factory CloudFireStoreDataAgentImpl() => _singleton;
 
   CloudFireStoreDataAgentImpl._internal();
+
+  /// Firebase Firestore instance
+  final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
+
+  /// firebase storage
+  final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
+
+  /// authentication
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   /// create moment
   @override
@@ -138,5 +144,106 @@ class CloudFireStoreDataAgentImpl extends WeChatCloudFireStoreDataAgent {
         .then(
           (snapShot) => snapShot.ref.getDownloadURL(),
         );
+  }
+
+  @override
+  Future registerNewUser(UserVO registerUser) {
+    return _firebaseAuth
+        .createUserWithEmailAndPassword(
+          email: registerUser.email ?? "",
+          password: registerUser.password ?? "",
+        )
+        .then((userCredential) =>
+            userCredential.user?..updateDisplayName(registerUser.userName))
+        .then((user) {
+      registerUser.id = user?.uid;
+      registerUser.organization = "Comp/Org";
+      _addNewUser(registerUser);
+    });
+  }
+
+  Future<void> _addNewUser(UserVO registerUser) {
+    return _fireStore.collection(collectionUsers).doc(registerUser.id).set(
+          registerUser.toJson(),
+        );
+  }
+
+  @override
+  Future login(String email, String password) {
+    return _firebaseAuth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+  }
+
+  @override
+  Future<UserVO> getLoginUser() {
+    return _fireStore
+        .collection(collectionUsers)
+        .doc(_firebaseAuth.currentUser?.uid)
+        .get()
+        .asStream()
+        .where((event) => event.data() != null)
+        .map(
+          (event) => UserVO.fromJson(
+            event.data()!,
+          ),
+        )
+        .first;
+  }
+
+  @override
+  Stream<UserVO> getUserById(String userId) {
+    return _fireStore
+        .collection(collectionUsers)
+        .doc(userId)
+        .get()
+        .asStream()
+        .where((event) => event.data() != null)
+        .map(
+          (event) => UserVO.fromJson(
+            event.data()!,
+          ),
+        );
+  }
+
+  @override
+  Future<void> addContact(String userId, ContactVO contact) {
+    return _fireStore
+        .collection(collectionUsers)
+        .doc(userId)
+        .collection(collectionContacts)
+        .doc(contact.id)
+        .set(
+          contact.toJson(),
+        );
+  }
+
+  @override
+  Stream<List<ContactVO>> getContact(String userId) {
+    return _fireStore
+        .collection(collectionUsers)
+        .doc(userId)
+        .collection(collectionContacts)
+        .snapshots()
+        .map(
+          (querySnapShot) => querySnapShot.docs
+              .map(
+                (queryDocumentSnapShot) => ContactVO.fromJson(
+                  queryDocumentSnapShot.data(),
+                ),
+              )
+              .toList(),
+        );
+  }
+
+  @override
+  bool isLogin() {
+    return _firebaseAuth.currentUser != null;
+  }
+
+  @override
+  Future<void> logOut() {
+    return _firebaseAuth.signOut();
   }
 }

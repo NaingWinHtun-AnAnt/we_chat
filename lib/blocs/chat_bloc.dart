@@ -7,7 +7,6 @@ import 'package:we_chat/data/models/user_model.dart';
 import 'package:we_chat/data/models/user_model_impl.dart';
 import 'package:we_chat/data/vos/message_vo.dart';
 import 'package:we_chat/data/vos/user_vo.dart';
-import 'package:we_chat/network/firebase_constants.dart';
 
 class ChatBloc extends ChangeNotifier {
   /// control dispose
@@ -25,15 +24,22 @@ class ChatBloc extends ChangeNotifier {
   final UserModel _userModel = UserModelImpl();
 
   ChatBloc(int conversationId) {
-    _chatModel.getMessages(conversationId, myId).listen((event) {
-      messageList = event.reversed.toList();
+    _userModel.getUser().then((value) {
+      mMyUser = value;
       _notifySafety();
     });
 
-    _userModel.getUser()?.listen((event) {
-      mMyUser = event;
-      _notifySafety();
-    });
+    _chatModel
+        .getMessages(
+      conversationId,
+      mMyUser?.id ?? "",
+    )
+        .listen(
+      (event) {
+        messageList = event.reversed.toList();
+        _notifySafety();
+      },
+    );
   }
 
   void onMessageTextChange(String message) {
@@ -64,7 +70,7 @@ class ChatBloc extends ChangeNotifier {
         text,
         selectedFile,
         isVideoFile,
-        myId,
+        mMyUser?.id ?? "",
       )
           .then((value) {
         text = null;

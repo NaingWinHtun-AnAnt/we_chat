@@ -4,8 +4,10 @@ import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:we_chat/blocs/qr_bloc.dart';
+import 'package:we_chat/pages/home_page.dart';
 import 'package:we_chat/resources/colors.dart';
 import 'package:we_chat/resources/dimens.dart';
+import 'package:we_chat/resources/strings.dart';
 import 'package:we_chat/widgets/leading_view.dart';
 import 'package:we_chat/widgets/round_corner_button_view.dart';
 
@@ -59,8 +61,20 @@ class _QrPageState extends State<QrPage> {
   void _onQRViewCreated(BuildContext context, QRViewController? controller) {
     controller?.scannedDataStream.listen((scanData) {
       final bloc = Provider.of<QrBloc>(context, listen: false);
-      bloc.onCreateNewContact(scanData.code);
+
+      /// create new contact with scan user
+      bloc.onGetUserAndAddToContact(scanData.code ?? "").then((value) {
+        _navigateToHomePage(context);
+      });
     });
+  }
+
+  void _navigateToHomePage(BuildContext context) {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (BuildContext context) => const HomePage(),
+      ),
+    );
   }
 }
 
@@ -84,6 +98,14 @@ class QrImageView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            QrImage(
+              data: bloc.user?.id ?? "0",
+              version: QrVersions.auto,
+              size: 200.0,
+            ),
+            const SizedBox(
+              height: marginMedium3,
+            ),
             const Text(
               "My QR Code",
               style: TextStyle(
@@ -95,7 +117,7 @@ class QrImageView extends StatelessWidget {
               height: marginMedium3,
             ),
             Text(
-              "${bloc.user?.id ?? "-"}",
+              bloc.user?.id ?? "-",
               style: const TextStyle(
                 fontSize: textRegular2x,
                 fontWeight: FontWeight.w500,
@@ -104,16 +126,8 @@ class QrImageView extends StatelessWidget {
             const SizedBox(
               height: marginMedium3,
             ),
-            QrImage(
-              data: "${bloc.user?.id ?? "0"}",
-              version: QrVersions.auto,
-              size: 200.0,
-            ),
-            const SizedBox(
-              height: marginMedium3,
-            ),
             RoundCornerButtonView(
-              text: "Scan",
+              text: scanQrCode,
               onTap: () {
                 bloc.onTapScanner(isScannerMode);
               },
@@ -139,6 +153,7 @@ class QrScannerView extends StatelessWidget {
   Widget build(BuildContext context) {
     return QRView(
       key: qrKey,
+      overlay: QrScannerOverlayShape(),
       onQRViewCreated: (qrViewController) => onQrViewCreated(qrViewController),
     );
   }
