@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:we_chat/blocs/chat_bloc.dart';
-import 'package:we_chat/data/vos/conversation_vo.dart';
 import 'package:we_chat/data/vos/message_vo.dart';
 import 'package:we_chat/resources/colors.dart';
 import 'package:we_chat/resources/dimens.dart';
@@ -16,17 +15,21 @@ import 'package:we_chat/widgets/leading_view.dart';
 import 'package:we_chat/widgets/vertical_list_view.dart';
 
 class ChatPage extends StatelessWidget {
-  final ConversationVO? conversation;
+  final String contactUserId;
+  final String contactUserName;
+  final String contactProfilePath;
 
   const ChatPage({
     Key? key,
-    required this.conversation,
+    required this.contactUserId,
+    required this.contactUserName,
+    required this.contactProfilePath,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (BuildContext context) => ChatBloc(conversation?.id ?? 0),
+      create: (BuildContext context) => ChatBloc(contactUserId),
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: colorPrimary,
@@ -38,7 +41,7 @@ class ChatPage extends StatelessWidget {
           ),
           leadingWidth: leadingWidth,
           centerTitle: true,
-          title: Text(conversation?.userName ?? "-"),
+          title: Text(contactUserName),
           actions: const [
             Icon(Icons.person),
             SizedBox(
@@ -66,9 +69,9 @@ class ChatPage extends StatelessWidget {
                   builder:
                       (BuildContext context, ChatBloc bloc, Widget? child) =>
                           ChatView(
-                    user: bloc.mMyUser,
+                    user: bloc.loginUser,
                     message: mMessageList?[index],
-                    contactProfilePath: conversation?.profilePath,
+                    contactProfilePath: contactProfilePath,
                   ),
                 ),
               ),
@@ -77,7 +80,7 @@ class ChatPage extends StatelessWidget {
               builder: (BuildContext context, ChatBloc bloc, Widget? child) =>
                   ChatControlView(
                 onTextChange: (message) => _onTextChange(context, message),
-                onTapSend: () => _onTapSend(context, conversation?.id),
+                onTapSend: () => _onTapSend(context),
                 text: bloc.text,
                 onSelectFile: () => onSelectFile(context),
                 isVideoFile: bloc.isVideoFile,
@@ -111,10 +114,9 @@ class ChatPage extends StatelessWidget {
 
   void _onTapSend(
     BuildContext context,
-    int? conversationId,
   ) {
     final bloc = Provider.of<ChatBloc>(context, listen: false);
-    bloc.onTapSendMessage(conversationId ?? 0);
+    bloc.onTapSendMessage(contactUserId, contactUserName, contactProfilePath);
   }
 }
 

@@ -15,7 +15,7 @@ class ChatBloc extends ChangeNotifier {
   /// states
   List<MessageVO>? messageList;
   String? text;
-  UserVO? mMyUser;
+  UserVO? loginUser;
   File? selectedFile;
   bool isVideoFile = false;
 
@@ -23,23 +23,25 @@ class ChatBloc extends ChangeNotifier {
   final ChatModel _chatModel = ChatModelImpl();
   final UserModel _userModel = UserModelImpl();
 
-  ChatBloc(int conversationId) {
+  ChatBloc(String contactUserId) {
     _userModel.getUser().then((value) {
-      mMyUser = value;
+      loginUser = value;
       _notifySafety();
-    });
 
-    _chatModel
-        .getMessages(
-      conversationId,
-      mMyUser?.id ?? "",
-    )
-        .listen(
-      (event) {
-        messageList = event.reversed.toList();
-        _notifySafety();
-      },
-    );
+      /// user my user out of getUser block
+      /// user is null
+      _chatModel
+          .getMessages(
+        loginUser?.id ?? "",
+        contactUserId,
+      )
+          .listen(
+        (event) {
+          messageList = event.reversed.toList();
+          _notifySafety();
+        },
+      );
+    });
   }
 
   void onMessageTextChange(String message) {
@@ -58,28 +60,24 @@ class ChatBloc extends ChangeNotifier {
     _notifySafety();
   }
 
-  Future onTapSendMessage(int conversationId) {
-    final messageId = (messageList == null && (messageList?.isEmpty ?? true))
-        ? 12345
-        : (messageList?.length ?? 0) + 12345;
-    if (text != null) {
-      return _chatModel
-          .sendMessage(
-        messageId,
-        conversationId,
-        text,
-        selectedFile,
-        isVideoFile,
-        mMyUser?.id ?? "",
-      )
-          .then((value) {
-        text = null;
-        selectedFile = null;
-        _notifySafety();
-      });
-    } else {
-      return Future.error("Empty Message Error!");
-    }
+  Future onTapSendMessage(
+      String contactUserId, String contactUserName, String contactProfilePath) {
+    /// send message
+    return _chatModel
+        .sendMessage(
+      loginUser?.id ?? "",
+      contactUserId,
+      contactUserName,
+      contactProfilePath,
+      text,
+      selectedFile,
+      isVideoFile,
+    )
+        .then((value) {
+      text = null;
+      selectedFile = null;
+      _notifySafety();
+    });
   }
 
   /// use notifyListener safely

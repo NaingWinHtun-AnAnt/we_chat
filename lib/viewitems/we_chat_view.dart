@@ -1,19 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:we_chat/data/vos/conversation_vo.dart';
+import 'package:we_chat/data/vos/message_vo.dart';
 import 'package:we_chat/resources/colors.dart';
 import 'package:we_chat/resources/dimens.dart';
 import 'package:we_chat/widgets/image_view.dart';
 
 class WeChatView extends StatelessWidget {
-  final ConversationVO? conversationVO;
+  final String? contactProfilePath;
+  final MessageVO? messageVO;
   final Function onTap;
 
   const WeChatView({
     Key? key,
     required this.onTap,
-    required this.conversationVO,
+    required this.messageVO,
+    required this.contactProfilePath,
   }) : super(key: key);
 
   @override
@@ -29,7 +31,7 @@ class WeChatView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ImageView(
-              imageUrl: conversationVO?.profilePath ?? "-",
+              imageUrl: contactProfilePath ?? "-",
               radius: weChatViewImageSize / 2,
               width: weChatViewImageSize,
               height: weChatViewImageSize,
@@ -39,7 +41,7 @@ class WeChatView extends StatelessWidget {
             ),
             Flexible(
               child: ContentSectionView(
-                conversationVO: conversationVO,
+                message: messageVO,
               ),
             ),
           ],
@@ -50,11 +52,11 @@ class WeChatView extends StatelessWidget {
 }
 
 class ContentSectionView extends StatelessWidget {
-  final ConversationVO? conversationVO;
+  final MessageVO? message;
 
   const ContentSectionView({
     Key? key,
-    required this.conversationVO,
+    required this.message,
   }) : super(key: key);
 
   @override
@@ -67,13 +69,13 @@ class ContentSectionView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           NameAndDateSectionView(
-            conversationVO: conversationVO,
+            contactName: message?.receiverUserName,
           ),
           const SizedBox(
             height: marginMedium,
           ),
           Text(
-            conversationVO?.messages?.last?.message ?? "-",
+            message?.message ?? "-",
             maxLines: 2,
             style: const TextStyle(
               fontSize: textRegular2x,
@@ -88,11 +90,11 @@ class ContentSectionView extends StatelessWidget {
 }
 
 class NameAndDateSectionView extends StatelessWidget {
-  final ConversationVO? conversationVO;
+  final String? contactName;
 
   const NameAndDateSectionView({
     Key? key,
-    required this.conversationVO,
+    required this.contactName,
   }) : super(key: key);
 
   @override
@@ -101,7 +103,7 @@ class NameAndDateSectionView extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          conversationVO?.userName ?? "-",
+          contactName ?? "-",
           style: const TextStyle(
             color: colorGrey3,
             fontSize: textRegular3x,

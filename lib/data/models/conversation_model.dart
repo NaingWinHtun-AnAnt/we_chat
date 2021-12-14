@@ -1,9 +1,6 @@
-import 'package:we_chat/data/vos/conversation_vo.dart';
+import 'package:we_chat/data/vos/message_vo.dart';
 
 abstract class ConversationModel {
-  /// create conversation
-  Future<void> createConversation(String userId, ConversationVO conversation);
-
-  /// get all conversation for user
-  Stream<List<ConversationVO>> getConversations(String userId);
+  /// get recent chat list
+  Stream<MessageVO> getConversations(String myId, String contactId);
 }

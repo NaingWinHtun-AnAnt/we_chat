@@ -15,7 +15,7 @@ class InputTextView extends StatelessWidget {
     return Text(
       text,
       style: const TextStyle(
-        fontSize: textRegular3x,
+        fontSize: textRegular2x,
         color: colorWhite,
       ),
     );

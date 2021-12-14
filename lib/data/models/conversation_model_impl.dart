@@ -1,29 +1,24 @@
 import 'package:we_chat/data/models/conversation_model.dart';
-import 'package:we_chat/data/vos/conversation_vo.dart';
+import 'package:we_chat/data/vos/message_vo.dart';
 import 'package:we_chat/network/agents/real_time_database_data_agent_impl.dart';
 import 'package:we_chat/network/agents/we_chat_real_time_database_data_agent.dart';
 
 class ConversationModelImpl extends ConversationModel {
-  /// data agent
-  final WeChatRealTimeDatabaseDataAgent _mDataAgent =
-      RealTimeDatabaseDataAgentImpl();
-
   static final ConversationModelImpl _singleton =
       ConversationModelImpl._internal();
 
-  factory ConversationModelImpl() => _singleton;
+  factory ConversationModelImpl() {
+    return _singleton;
+  }
 
   ConversationModelImpl._internal();
 
-  /// create conversation
-  @override
-  Future<void> createConversation(String userId, ConversationVO conversation) {
-    return _mDataAgent.createConversation(userId, conversation);
-  }
+  /// data agent
+  final WeChatRealTimeDatabaseDataAgent _dataAgent =
+      RealTimeDatabaseDataAgentImpl();
 
-  /// get conversation lists
   @override
-  Stream<List<ConversationVO>> getConversations(String userId) {
-    return _mDataAgent.getConversations(userId);
+  Stream<MessageVO> getConversations(String myId, String contactId) {
+    return _dataAgent.getMessages(myId, contactId).map((event) => event.last);
   }
 }

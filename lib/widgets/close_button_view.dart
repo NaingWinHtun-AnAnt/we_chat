@@ -16,7 +16,7 @@ class CloseButtonView extends StatelessWidget {
       width: double.infinity,
       margin: const EdgeInsets.only(
         left: marginMedium2,
-        top: marginXLarge,
+        top: marginXXLarge,
       ),
       child: GestureDetector(
         onTap: () => onTap(),

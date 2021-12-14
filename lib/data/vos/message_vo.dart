@@ -5,25 +5,37 @@ part 'message_vo.g.dart';
 @JsonSerializable(includeIfNull: true, anyMap: true)
 class MessageVO {
   @JsonKey(name: "id")
-  int id;
+  String? id;
 
   @JsonKey(name: "message")
   String? message;
 
-  @JsonKey(name: "userId")
+  @JsonKey(name: "send_user_id")
   String? userId;
 
-  @JsonKey(name: "fileUrl")
+  @JsonKey(name: "receive_user_id")
+  String? receiveUserId;
+
+  @JsonKey(name: "file_url")
   String? fileUrl;
 
-  @JsonKey(name: "isVideoFile")
+  @JsonKey(name: "receiver_profile_path")
+  String? receiverProfilePath;
+
+  @JsonKey(name: "receiver_user_name")
+  String? receiverUserName;
+
+  @JsonKey(name: "is_video_file")
   bool isVideoFile;
 
   MessageVO({
     required this.id,
     this.message,
     this.userId,
+    this.receiveUserId,
     this.fileUrl,
+    this.receiverProfilePath,
+    this.receiverUserName,
     this.isVideoFile = false,
   });
 

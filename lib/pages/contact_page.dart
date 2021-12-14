@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:we_chat/blocs/contact_bloc.dart';
 import 'package:we_chat/data/vos/contact_vo.dart';
 import 'package:we_chat/pages/contact_profile_page.dart';
-import 'package:we_chat/pages/qr_page.dart';
 import 'package:we_chat/resources/colors.dart';
 import 'package:we_chat/resources/dimens.dart';
 import 'package:we_chat/resources/strings.dart';
@@ -37,8 +36,8 @@ class ContactPage extends StatelessWidget {
                 height: marginMedium2,
               ),
               const SearchView(),
-              const Divider(
-                color: colorGrey,
+              const SizedBox(
+                height: marginMedium2,
               ),
               const Padding(
                 padding: EdgeInsets.symmetric(
@@ -46,13 +45,10 @@ class ContactPage extends StatelessWidget {
                 ),
                 child: HorizontalContactSuggestionView(),
               ),
-              const Divider(
-                color: colorGrey,
+              const SizedBox(
+                height: marginMedium2,
               ),
               const LabelSectionView(),
-              const Divider(
-                color: colorGrey,
-              ),
               Selector(
                 selector: (
                   BuildContext context,
@@ -69,7 +65,7 @@ class ContactPage extends StatelessWidget {
                   shrinkWrap: true,
                   itemCount: contactList?.length ?? 0,
                   padding: const EdgeInsets.only(
-                    top: marginMedium2,
+                    top: marginMedium,
                   ),
                   itemBuilder: (BuildContext context, int index) => ContactView(
                     contact: contactList?[index],
@@ -91,7 +87,7 @@ class ContactPage extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (BuildContext context) => ContactProfilePage(
-          userId: userId,
+          contactUserId: userId,
         ),
       ),
     );
@@ -147,39 +143,27 @@ class HorizontalContactSuggestionView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
+      children: const [
         IconAndLabelView(
-          icon: Icons.add,
+          icon: Icons.add_reaction_rounded,
           text: newFriends,
-          onTap: () => _navigateToQrPage(context),
         ),
-        const VerticalDividerView(),
+        VerticalDividerView(),
         IconAndLabelView(
-          icon: Icons.group,
+          icon: Icons.group_rounded,
           text: groupChat,
-          onTap: () {},
         ),
-        const VerticalDividerView(),
+        VerticalDividerView(),
         IconAndLabelView(
           icon: Icons.tag,
           text: tags,
-          onTap: () {},
         ),
-        const VerticalDividerView(),
+        VerticalDividerView(),
         IconAndLabelView(
-          icon: Icons.account_box_rounded,
+          icon: Icons.account_box_outlined,
           text: officialAccount,
-          onTap: () {},
         ),
       ],
-    );
-  }
-
-  void _navigateToQrPage(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (BuildContext context) => const QrPage(),
-      ),
     );
   }
 }

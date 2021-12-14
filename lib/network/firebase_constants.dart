@@ -8,16 +8,10 @@ const collectionContacts = "contacts";
 
 /// nodes
 /// realtime database
-const nodeUsers = "users";
-const nodeChats = "chats";
-const nodeContacts = "contacts";
-const nodeMessages = "messages";
+const nodeContactsAndMessages = "contactsAndMessages";
 
 /// folder
 /// storage
 const folderMomentFile = "moments";
 const folderMessageFile = "messages";
 const folderProfileImageFile = "profiles";
-
-/// my id
-const myId = "12234234";

@@ -11,13 +11,13 @@ import 'package:we_chat/widgets/image_view.dart';
 class ChatView extends StatelessWidget {
   final MessageVO? message;
   final UserVO? user;
-  final String? contactProfilePath;
+  final String contactProfilePath;
 
   const ChatView({
     Key? key,
     required this.message,
-    required this.contactProfilePath,
     required this.user,
+    required this.contactProfilePath,
   }) : super(key: key);
 
   @override

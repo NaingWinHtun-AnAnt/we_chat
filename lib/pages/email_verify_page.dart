@@ -37,86 +37,96 @@ class EmailVerifyPage extends StatelessWidget {
               Stack(
             children: [
               SingleChildScrollView(
-                child: Container(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: marginMedium3,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CloseButtonView(
-                        onTap: () => Navigator.of(context).pop(),
-                      ),
-                      const SizedBox(
-                        height: marginXLarge,
-                      ),
-                      const Center(
-                        child: Text(
-                          emailVerification,
-                          style: TextStyle(
-                            color: colorWhite,
-                            fontSize: textRegular3x,
-                            fontWeight: FontWeight.w700,
-                          ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CloseButtonView(
+                      onTap: () => Navigator.of(context).pop(),
+                    ),
+                    const SizedBox(
+                      height: marginXXLarge,
+                    ),
+                    const Center(
+                      child: Text(
+                        emailVerification,
+                        style: TextStyle(
+                          color: colorWhite,
+                          fontSize: textRegular3x,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
-                      const SizedBox(
-                        height: marginXLarge,
+                    ),
+                    const SizedBox(
+                      height: marginXLarge,
+                    ),
+                    Container(
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: marginMedium3,
                       ),
-                      const Text(
+                      child: const Text(
                         emailVerificationInfo,
                         style: TextStyle(
                           color: colorWhite,
                           fontSize: textRegular,
                         ),
                       ),
-                      const SizedBox(
-                        height: marginMedium,
+                    ),
+                    const SizedBox(
+                      height: marginMedium,
+                    ),
+                    Container(
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: marginMedium3,
                       ),
-                      const Divider(
+                      child: const Divider(
                         color: colorGrey,
                       ),
-                      const SizedBox(
-                        height: marginMedium,
+                    ),
+                    const SizedBox(
+                      height: marginMedium,
+                    ),
+                    Consumer(
+                      builder: (BuildContext context, EmailVerifyBloc bloc,
+                              Widget? child) =>
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                              horizontal: marginMedium3,
+                            ),
+                            child: TextInputView(
+                        label: labelEmail,
+                        hint: hintEmail,
+                        onTextChange: (value) => bloc.onEmailChange(value),
                       ),
-                      Consumer(
+                          ),
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.6,
+                    ),
+                    Center(
+                      child: Consumer(
                         builder: (BuildContext context, EmailVerifyBloc bloc,
                                 Widget? child) =>
-                            TextInputView(
-                          label: labelEmail,
-                          hint: hintEmail,
-                          onTextChange: (value) => bloc.onEmailChange(value),
+                            ButtonView(
+                          text: ok,
+                          onTap: () => bloc.email != null
+                              ? bloc
+                                  .onTapOkToRegisterNewUser()
+                                  .then(
+                                    (value) => _navigateToLoginPage(context),
+                                  )
+                                  .catchError(
+                                    (error) => showSnackBarWithMessage(
+                                      context,
+                                      error.toString(),
+                                    ),
+                                  )
+                              : null,
+                          backgroundColor:
+                              bloc.email != null ? colorPrimary : colorBlack2,
                         ),
                       ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.6,
-                      ),
-                      Center(
-                        child: Consumer(
-                          builder: (BuildContext context, EmailVerifyBloc bloc,
-                                  Widget? child) =>
-                              ButtonView(
-                            text: ok,
-                            onTap: () => bloc.email != null
-                                ? bloc
-                                    .onTapOkToRegisterNewUser()
-                                    .then(
-                                      (value) => _navigateToLoginPage(context),
-                                    )
-                                    .catchError(
-                                      (error) => showSnackBarWithMessage(
-                                        context,
-                                        error.toString(),
-                                      ),
-                                    )
-                                : null,
-                            backgroundColor:
-                                bloc.email != null ? colorPrimary : colorBlack2,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
               Visibility(

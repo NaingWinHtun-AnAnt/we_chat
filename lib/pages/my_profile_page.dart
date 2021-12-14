@@ -22,6 +22,17 @@ class MyProfilePage extends StatelessWidget {
       create: (BuildContext context) => MyProfileBloc(),
       child: Scaffold(
         backgroundColor: colorWhite,
+        appBar: AppBar(
+          backgroundColor: colorPrimary,
+          title: Consumer(
+            builder:
+                (BuildContext context, MyProfileBloc bloc, Widget? child) =>
+                    UserInfoAndForwardIconView(
+              user: bloc.user,
+              onTapQrCode: () => _navigateToQRPage(context),
+            ),
+          ),
+        ),
         body: SingleChildScrollView(
           child: Column(
             children: [
@@ -33,10 +44,11 @@ class MyProfilePage extends StatelessWidget {
                 ) =>
                     UserInfoSectionView(
                   user: bloc.user,
-                  onTapQrCode: () => _navigateToQRPage(context),
                 ),
               ),
+              const SizedBox(height: marginMedium2,),
               const UserDataView(),
+              const SizedBox(height: marginMedium3,),
               const SizedBox(
                 height: marginMedium2,
               ),
@@ -82,41 +94,56 @@ class UserDataView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MediaQuery.removeViewPadding(
-      context: context,
-      removeTop: true,
-      child: GridView.count(
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        crossAxisCount: 3,
-        children: List.generate(
-          6,
-          (index) => Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: colorGrey, width: 0.4),
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: const [
+            IconAndLabelView(
+              icon: Icons.image,
+              text: "Photos",
             ),
-            child: Center(
-              child: IconAndLabelView(
-                icon: Icons.eleven_mp,
-                text: "text",
-                onTap: () {},
-              ),
+            IconAndLabelView(
+              icon: Icons.favorite_rounded,
+              text: "Favorite",
             ),
-          ),
+            IconAndLabelView(
+              icon: Icons.account_balance_wallet_rounded,
+              text: "Wallet",
+            ),
+          ],
         ),
-      ),
+        const SizedBox(
+          height: marginXLarge,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: const [
+            IconAndLabelView(
+              icon: Icons.credit_card_rounded,
+              text: "Cards",
+            ),
+            IconAndLabelView(
+              icon: Icons.sentiment_satisfied_outlined,
+              text: "Stickers",
+            ),
+            IconAndLabelView(
+              icon: Icons.settings,
+              text: "Settings",
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
 
 class UserInfoSectionView extends StatelessWidget {
   final UserVO? user;
-  final Function onTapQrCode;
 
   const UserInfoSectionView({
     Key? key,
     required this.user,
-    required this.onTapQrCode,
   }) : super(key: key);
 
   @override
@@ -127,10 +154,6 @@ class UserInfoSectionView extends StatelessWidget {
           imageUrl: dummyNetworkImage,
           width: double.infinity,
           height: MediaQuery.of(context).size.height * 0.225,
-        ),
-        UserInfoAndForwardIconView(
-          user: user,
-          onTapQrCode: () => onTapQrCode(),
         ),
         ProfileImageView(
           imageUrl: user?.imagePath ?? dummyNetworkImage,
@@ -186,7 +209,6 @@ class UserInfoAndForwardIconView extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(
         vertical: marginMedium2,
-        horizontal: marginMedium2,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -203,9 +225,10 @@ class UserInfoAndForwardIconView extends StatelessWidget {
           GestureDetector(
             onTap: () => onTapQrCode(),
             child: const Icon(
-              Icons.all_inbox_outlined,
+              Icons.qr_code,
             ),
           ),
+          const SizedBox(width: marginSmall,),
           const Icon(
             Icons.arrow_forward_ios_rounded,
             size: forwardIconSize,
@@ -235,7 +258,7 @@ class UserNameAndIdView extends StatelessWidget {
           userName ?? "-",
           style: const TextStyle(
             fontSize: textRegular2x,
-            color: colorBlack,
+            color: colorWhite,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -247,7 +270,7 @@ class UserNameAndIdView extends StatelessWidget {
           style: const TextStyle(
             fontSize: textRegular,
             fontWeight: FontWeight.w700,
-            color: colorGrey2,
+            color: colorWhite,
           ),
         ),
       ],

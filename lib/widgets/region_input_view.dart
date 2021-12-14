@@ -32,7 +32,7 @@ class RegionInputView extends StatelessWidget {
               width: marginMedium2,
             ),
             Flexible(
-              flex: 2,
+              flex: 3,
               child: GestureDetector(
                 onTap: () => onTap(),
                 child: InputTextView(text: text),

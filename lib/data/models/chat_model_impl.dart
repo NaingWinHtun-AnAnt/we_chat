@@ -18,50 +18,76 @@ class ChatModelImpl extends ChatModel {
   ChatModelImpl._internal();
 
   @override
-  Stream<List<MessageVO>> getMessages(int conversationId, String userId) {
-    return _mDataAgent.getMessages(conversationId, userId);
+  Stream<List<MessageVO>> getMessages(String sendUserId, String receiveUserId) {
+    return _mDataAgent.getMessages(sendUserId, receiveUserId);
   }
 
   @override
   Future sendMessage(
-    int messageId,
-    int conversationId,
+    String sendUserId,
+    String receiveUserId,
+    String receiverUserName,
+    String receiverProfilePath,
     String? text,
     File? file,
     bool isVideoFile,
-    String userId,
   ) {
     if (file != null) {
+      /// write message in sender node first and then the receiver
       return _mDataAgent
           .uploadFileToFirebaseStorage(file, folderMessageFile)
           .then(
-            (fileUrl) => _craftMessageVO(messageId, userId, isVideoFile, text,
-                    fileUrl: fileUrl)
-                .then(
-              (message) =>
-                  _mDataAgent.sendMessage(conversationId, message, userId),
+            (fileUrl) => _craftMessageVO(
+              sendUserId,
+              receiveUserId,
+              isVideoFile,
+              text,
+              receiverUserName,
+              receiverProfilePath,
+              fileUrl: fileUrl,
+            ).then(
+              (message) => _mDataAgent
+                  .sendMessage(sendUserId, message, receiveUserId)
+                  .then((value) => _mDataAgent.sendMessage(
+                      receiveUserId, message, sendUserId)),
             ),
           );
     } else {
-      return _craftMessageVO(messageId, userId, isVideoFile, text).then(
-        (message) => _mDataAgent.sendMessage(conversationId, message, userId),
+      /// write message in sender node first and then the receiver
+      return _craftMessageVO(
+        sendUserId,
+        receiveUserId,
+        isVideoFile,
+        text,
+        receiverUserName,
+        receiverProfilePath,
+      ).then(
+        (message) => _mDataAgent
+            .sendMessage(sendUserId, message, receiveUserId)
+            .then((value) =>
+                _mDataAgent.sendMessage(receiveUserId, message, sendUserId)),
       );
     }
   }
 
   Future<MessageVO> _craftMessageVO(
-    int messageId,
     String userId,
+    String receiveUserId,
     bool isVideoFile,
-    String? text, {
+    String? text,
+    String receiverUserName,
+    String receiverProfilePath, {
     String? fileUrl,
   }) {
     /// prepare message
     final mMessage = MessageVO(
-      id: messageId,
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
       userId: userId,
+      receiveUserId: receiveUserId,
       isVideoFile: isVideoFile,
       fileUrl: fileUrl,
+      receiverProfilePath: receiverProfilePath,
+      receiverUserName: receiverUserName,
       message: text,
     );
     return Future.value(mMessage);

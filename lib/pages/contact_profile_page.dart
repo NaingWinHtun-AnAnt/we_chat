@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:we_chat/blocs/contact_profile_bloc.dart';
-import 'package:we_chat/data/vos/conversation_vo.dart';
+import 'package:we_chat/data/vos/user_vo.dart';
 import 'package:we_chat/pages/chat_page.dart';
 import 'package:we_chat/resources/colors.dart';
 import 'package:we_chat/resources/dimens.dart';
@@ -14,17 +14,17 @@ import 'package:we_chat/widgets/leading_view.dart';
 import 'package:we_chat/widgets/round_corner_button_view.dart';
 
 class ContactProfilePage extends StatelessWidget {
-  final String userId;
+  final String contactUserId;
 
   const ContactProfilePage({
     Key? key,
-    required this.userId,
+    required this.contactUserId,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (BuildContext context) => ContactProfileBloc(userId),
+      create: (BuildContext context) => ContactProfileBloc(contactUserId),
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: colorPrimary,
@@ -52,11 +52,7 @@ class ContactProfilePage extends StatelessWidget {
                         Widget? child) =>
                     RoundCornerButtonView(
                   text: messages,
-                  onTap: () {
-                    bloc.onCreateNewConversation(userId).then(
-                          (value) => _navigateToChatPage(context, value),
-                        );
-                  },
+                  onTap: () => _navigateToChatPage(context, bloc.contactUser),
                 ),
               ),
               const SizedBox(
@@ -74,11 +70,13 @@ class ContactProfilePage extends StatelessWidget {
     );
   }
 
-  void _navigateToChatPage(BuildContext context, ConversationVO conversation) {
+  void _navigateToChatPage(BuildContext context, UserVO? contactUser) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (BuildContext context) => ChatPage(
-          conversation: conversation,
+          contactUserId: contactUser?.id ?? "",
+          contactProfilePath: contactUser?.imagePath ?? "",
+          contactUserName: contactUser?.userName ?? "",
         ),
       ),
     );
@@ -301,7 +299,7 @@ class ContactInfoView extends StatelessWidget {
                 child: ImageView(
                   radius: contactProfileImageSize,
                   width: contactProfileImageSize,
-                  imageUrl: bloc.user?.imagePath ?? "-",
+                  imageUrl: bloc.contactUser?.imagePath ?? "-",
                   height: contactProfileImageSize,
                 ),
               ),
@@ -319,7 +317,7 @@ class ContactInfoView extends StatelessWidget {
                   right: marginMedium2,
                 ),
                 child: NameAndRecentActivityTextView(
-                  contactName: bloc.user?.userName,
+                  contactName: bloc.contactUser?.userName,
                 ),
               ),
             ),

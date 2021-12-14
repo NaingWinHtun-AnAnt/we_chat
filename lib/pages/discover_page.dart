@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 import 'package:we_chat/pages/moment_page.dart';
 import 'package:we_chat/resources/colors.dart';
 import 'package:we_chat/resources/dimens.dart';
@@ -28,11 +29,11 @@ class DiscoverPage extends StatelessWidget {
               onTap: () => _navigateToMomentPage(context),
             ),
             const SizedBox(
-              height: marginSmall,
+              height: marginMedium,
             ),
             const DiscoverFilterGridView(),
             const SizedBox(
-              height: marginSmall,
+              height: marginMedium,
             ),
             const GameSectionView(),
           ],
@@ -58,7 +59,6 @@ class GameSectionView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: colorWhite,
       padding: const EdgeInsets.symmetric(
         vertical: marginMedium2,
       ),
@@ -99,35 +99,52 @@ class DiscoverFilterGridView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.count(
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      crossAxisCount: 2,
-      childAspectRatio: 3.4,
-      children: List.generate(
-        4,
-        (index) => Container(
-          decoration: BoxDecoration(
-            color: colorWhite,
-            border: Border.all(
-              width: 0.1,
-              color: colorGrey,
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Icon(
-                Icons.access_alarm_outlined,
-              ),
-              SizedBox(
-                width: marginMedium,
-              ),
-              Text("People NearBy"),
-            ],
-          ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            IconAndTextView(icon: Icons.qr_code, text: "Scan QrCode",),
+            SizedBox(height: marginMedium3,),
+            IconAndTextView(icon: Icons.local_drink_rounded, text: "Drift Bottles",),
+          ],
         ),
-      ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            IconAndTextView(icon: Icons.aod_rounded, text: "Shake",),
+            SizedBox(height: marginMedium3,),
+            IconAndTextView(icon: Icons.near_me_rounded, text: "People Near Me",),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class IconAndTextView extends StatelessWidget {
+  final IconData icon;
+  final String text;
+
+  const IconAndTextView({
+    Key? key, required this.icon, required this.text,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children:  [
+        Icon(
+          icon,
+          color: colorGrey3,
+        ),
+        const SizedBox(
+          width: marginMedium,
+        ),
+        Text(text,style: const TextStyle(color: colorGrey3),),
+      ],
     );
   }
 }
@@ -144,23 +161,20 @@ class DiscoverMomentSectionView extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => onTap(),
-      child: Container(
-        color: colorWhite,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: const [
-            Padding(
-              padding: EdgeInsets.all(
-                marginMedium2,
-              ),
-              child: LabelAndIconHorizontalView(),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: const [
+          Padding(
+            padding: EdgeInsets.all(
+              marginMedium2,
             ),
-            DiscoverMomentView(),
-            SizedBox(
-              height: marginMedium2,
-            ),
-          ],
-        ),
+            child: LabelAndIconHorizontalView(),
+          ),
+          DiscoverMomentView(),
+          SizedBox(
+            height: marginMedium2,
+          ),
+        ],
       ),
     );
   }
@@ -201,21 +215,26 @@ class DiscoverMomentView extends StatelessWidget {
                       style: TextStyle(
                         fontWeight: FontWeight.w800,
                         fontSize: textRegular2x,
+                        color: colorGrey,
                       ),
                     ),
                     Text(
                       "12 mins",
+                      style: TextStyle(
+                        color: colorGrey,
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(
-                  height: marginSmall,
+                  height: marginMedium,
                 ),
                 const Text(
                   "This word has two main meanings. The first has to do with being pleased and satisfied (feeling content) or making someone else feel happy and at peace with",
                   maxLines: 3,
                   style: TextStyle(
                     fontSize: textRegular,
+                    color: colorGrey2,
                   ),
                 ),
               ],
@@ -264,6 +283,7 @@ class DiscoverLabelTextView extends StatelessWidget {
       style: const TextStyle(
         fontWeight: FontWeight.w600,
         fontSize: textRegular2x,
+        color: colorGrey,
       ),
     );
   }
@@ -292,6 +312,8 @@ class SuggestGameView extends StatelessWidget {
           ),
           Text(
             "Game One",
+            style: TextStyle(color: colorGrey2,
+            fontSize: textRegular,),
           ),
         ],
       ),

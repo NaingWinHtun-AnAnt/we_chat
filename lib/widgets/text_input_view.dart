@@ -36,14 +36,14 @@ class TextInputView extends StatelessWidget {
               width: marginMedium2,
             ),
             Flexible(
-              flex: 2,
+              flex: 3,
               child: TextField(
                 obscureText: isObscure,
                 keyboardType: inputType,
                 decoration: InputDecoration(
                   hintText: hint,
                   hintStyle: const TextStyle(
-                    fontSize: textRegular3x,
+                    fontSize: textRegular2x,
                     color: colorGrey,
                   ),
                   contentPadding: EdgeInsets.zero,

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:we_chat/data/models/contact_model.dart';
+import 'package:we_chat/data/models/contact_model_impl.dart';
 import 'package:we_chat/data/models/conversation_model.dart';
 import 'package:we_chat/data/models/conversation_model_impl.dart';
 import 'package:we_chat/data/models/user_model.dart';
 import 'package:we_chat/data/models/user_model_impl.dart';
-import 'package:we_chat/data/vos/conversation_vo.dart';
+import 'package:we_chat/data/vos/message_vo.dart';
 import 'package:we_chat/data/vos/user_vo.dart';
 
 class WeChatBloc extends ChangeNotifier {
@@ -12,17 +14,26 @@ class WeChatBloc extends ChangeNotifier {
 
   /// states
   UserVO? user;
-  List<ConversationVO>? conversationList;
+  String? contactProfilePath;
+  List<MessageVO>? recentMessageList = [];
 
   /// model
-  final ConversationModel _mConversationModel = ConversationModelImpl();
   final UserModel _mUserModel = UserModelImpl();
+  final ContactModel _mContactModel = ContactModelImpl();
+  final ConversationModel _mConversationModel = ConversationModelImpl();
 
   WeChatBloc() {
-    _mUserModel.getUser().then((value) {
-      _mConversationModel.getConversations(value.id ?? "").listen((event) {
-        conversationList = event;
+    _mUserModel.getUser().then((loginUser) {
+      _mContactModel.getContact(loginUser.id ?? "").listen((contactUser) {
+        contactProfilePath = contactUser.first.imagePath;
         _notifySafety();
+        _mConversationModel
+            .getConversations(loginUser.id ?? "", contactUser.first.id)
+            .listen((event) {
+          recentMessageList?.clear();
+          recentMessageList?.add(event);
+          _notifySafety();
+        });
       });
     });
   }
