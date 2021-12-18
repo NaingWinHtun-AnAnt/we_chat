@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:we_chat/blocs/moment_bloc.dart';
-import 'package:we_chat/data/vos/comment_vo.dart';
-import 'package:we_chat/data/vos/like_vo.dart';
 import 'package:we_chat/data/vos/moment_vo.dart';
 import 'package:we_chat/pages/add_new_moment_page.dart';
 import 'package:we_chat/pages/moment_detail_page.dart';
@@ -64,14 +62,13 @@ class MomentPage extends StatelessWidget {
                     int index,
                   ) =>
                       MomentView(
-                    alreadyLike: bloc.momentList?[index].like != null,
+                    alreadyLike: bloc.momentList?[index].like
+                            ?.map((e) => e.id)
+                            .contains(bloc.loginUser?.id) ??
+                        false,
                     moment: bloc.momentList?[index],
-                    commentList: bloc.momentList?[index].comment != null
-                        ? [bloc.momentList?[index].comment ?? CommentVO(id: "")]
-                        : [],
-                    likeUserList: bloc.momentList?[index].like != null
-                        ? [bloc.momentList?[index].like ?? LikeVO(id: '')]
-                        : [],
+                    commentList: bloc.momentList?[index].comment,
+                    likeUserList: bloc.momentList?[index].like,
                     onTapMoment: (momentId) =>
                         _navigateToMomentDetailPage(context, momentId),
                     onTapLike: (moment) => _onTapMomentLike(

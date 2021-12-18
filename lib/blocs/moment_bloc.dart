@@ -20,7 +20,7 @@ class MomentBloc extends ChangeNotifier {
   bool isDispose = false;
 
   /// states
-  UserVO? _loginUser;
+  UserVO? loginUser;
   List<MomentVO>? momentList;
 
   /// models
@@ -37,7 +37,10 @@ class MomentBloc extends ChangeNotifier {
     });
 
     /// get login user for further process
-    _mUserModel.getUser().then((value) => _loginUser = value);
+    _mUserModel.getUser().then((value) {
+      loginUser = value;
+      _notifySafety();
+    });
 
     /// log moment list page reach
     FirebaseAnalyticsTracker().logEvent(momentListScreenReached);
@@ -45,23 +48,33 @@ class MomentBloc extends ChangeNotifier {
 
   /// add like to sub-collection('like') and moment
   void onTapMomentLike(MomentVO moment) {
-    if (moment.like == null) {
+    if (!moment.like!.map((e) => e.id).contains(loginUser?.id)) {
       final _like = LikeVO(
-        id: _loginUser?.id ?? "",
-        userName: _loginUser?.userName,
+        id: loginUser?.id ?? "",
+        userName: loginUser?.userName,
       );
       _momentModel.addMomentLike(moment.id, _like).then((value) {
-        moment.like = _like;
-        _momentModel.editMoment(moment).then(
-              (value) =>
+        /// limit at most 3 like to moment object
+        if ((moment.like?.length ?? 0) < 3) {
+          /// prepopulate moment object depend on like attribute state if null
+          if (moment.like == null || (moment.like?.isEmpty ?? true)) {
+            moment.like = [_like];
+          } else {
+            moment.like?.insert(moment.like?.length ?? 0, _like);
+          }
+        }
 
-                  /// send notification
-                  _sendNotification(
-                moment,
-                messageTitle: likeNotificationTitle,
-                messageBody: likeNotificationBody,
-              ),
+        /// add comment to moment
+        _momentModel.editMoment(moment).then((value) {
+          /// send notification to moment creator not by itself
+          if (loginUser?.id != moment.userId) {
+            _sendNotification(
+              moment,
+              messageTitle: likeNotificationTitle,
+              messageBody: likeNotificationBody,
             );
+          }
+        });
       }).then(
         (value) =>
 
@@ -73,9 +86,10 @@ class MomentBloc extends ChangeNotifier {
       );
     } else {
       _momentModel
-          .removeMomentLike(moment.id, _loginUser?.id ?? "")
+          .removeMomentLike(moment.id, loginUser?.id ?? "")
           .then((value) {
-        moment.like = null;
+        /// at least one like is exist is sure
+        moment.like?.removeLast();
         _momentModel.editMoment(moment);
       }).then(
         (value) => _analyticsTracker.logEvent(
@@ -106,7 +120,7 @@ class MomentBloc extends ChangeNotifier {
   }) {
     if (moment != null) {
       /// check if user interact with own moment
-      if (_loginUser?.id != moment.userId) {
+      if (loginUser?.id != moment.userId) {
         /// get moment owner fcm token and
         /// craft notification and send to moment owner
         /// if login userId and moment userId are different
@@ -115,7 +129,7 @@ class MomentBloc extends ChangeNotifier {
             momentId: moment.id,
             fcmToken: momentUser.fcmToken ?? "",
             messageTitle: messageTitle,
-            messageBody: "${_loginUser?.userName} $messageBody",
+            messageBody: "${loginUser?.userName} $messageBody",
           ).then((notification) {
             if (notification != null) {
               _mNotificationModel.sendNotification(notification)?.then(
@@ -127,7 +141,7 @@ class MomentBloc extends ChangeNotifier {
                       parameters: {
                         logMomentCreatorId: moment.userId ?? "",
                         logMomentId: "${moment.id}",
-                        logUserId: _loginUser?.id ?? "",
+                        logUserId: loginUser?.id ?? "",
                       },
                     ),
                   );

@@ -79,7 +79,8 @@ class MomentDetailBloc extends ChangeNotifier {
       _mMomentModel
           .removeMomentLike(momentId, _loginUser?.id ?? "")
           .then((value) {
-        moment?.like = null;
+        /// sure that at least one like exist as "alreadyLike" is true
+        moment?.like?.removeLast();
         _mMomentModel.editMoment(moment);
       }).then(
         (value) =>
@@ -104,25 +105,35 @@ class MomentDetailBloc extends ChangeNotifier {
         alreadyLike = true;
         _notifySafety();
       }).then((value) {
-        moment?.like = _like;
-        _mMomentModel.editMoment(moment).then((value) {
-          /// send notification
-          _sendNotification(
-            momentId,
-            messageTitle: likeNotificationTitle,
-            messageBody: likeNotificationBody,
-          );
+        /// limit at most 3 likes in moment
+        if ((moment?.like?.length ?? 0) < 3) {
+          /// prepopulate moment object depend on like attribute state if null
+          if (moment?.like == null || (moment?.like?.isEmpty ?? false)) {
+            moment?.like = [_like];
+          } else {
+            moment?.like?.insert(moment?.like?.length ?? 0, _like);
+          }
 
-          /// log send like notification event from moment detail
-          _analyticsTracker.logEvent(
-            sendLikeNotificationFromMomentDetailScreenAction,
-            parameters: {
-              logMomentCreatorId: moment?.userId ?? "",
-              logMomentId: "${moment?.id}",
-              logUserId: _loginUser?.id ?? "",
-            },
-          );
-        });
+          /// add like to moment
+          _mMomentModel.editMoment(moment);
+        }
+
+        /// send notification
+        _sendNotification(
+          momentId,
+          messageTitle: likeNotificationTitle,
+          messageBody: likeNotificationBody,
+        );
+
+        /// log send like notification event from moment detail
+        _analyticsTracker.logEvent(
+          sendLikeNotificationFromMomentDetailScreenAction,
+          parameters: {
+            logMomentCreatorId: moment?.userId ?? "",
+            logMomentId: "${moment?.id}",
+            logUserId: _loginUser?.id ?? "",
+          },
+        );
       }).then(
         (value) =>
 
@@ -155,13 +166,16 @@ class MomentDetailBloc extends ChangeNotifier {
     );
 
     /// add new comment for moment sub-collection('comments') first
-    /// and add comment to moment object
     _mMomentModel.addNewComment(momentId, _comment).then((value) {
       isCommentMode = false;
       _notifySafety();
     }).then((value) {
-      moment?.comment = _comment;
-      _mMomentModel.editMoment(moment);
+      /// add comment to moment object
+      /// max comment is 3
+      if ((moment?.comment?.length ?? 0) < 3) {
+        moment?.comment?.insert(moment?.comment?.length ?? 0, _comment);
+        _mMomentModel.editMoment(moment);
+      }
     }).then((value) {
       /// send notification
       _sendNotification(

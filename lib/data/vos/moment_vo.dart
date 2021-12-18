@@ -29,10 +29,10 @@ class MomentVO {
   String? uploadedTime;
 
   @JsonKey(name: "like")
-  LikeVO? like;
+  List<LikeVO>? like;
 
   @JsonKey(name: "comment")
-  CommentVO? comment;
+  List<CommentVO>? comment;
 
   @JsonKey(name: "is_video_file")
   bool isVideoFile;
@@ -45,8 +45,8 @@ class MomentVO {
     this.momentFileUrl,
     this.content,
     this.uploadedTime,
-    this.like,
-    this.comment,
+    this.like = const [],
+    this.comment = const [],
     this.isVideoFile = false,
   });
 

@@ -14,13 +14,15 @@ MomentVO _$MomentVOFromJson(Map json) => MomentVO(
       momentFileUrl: json['moment_file_url'] as String?,
       content: json['content'] as String?,
       uploadedTime: json['uploaded_time'] as String?,
-      like: json['like'] == null
-          ? null
-          : LikeVO.fromJson(Map<String, dynamic>.from(json['like'] as Map)),
-      comment: json['comment'] == null
-          ? null
-          : CommentVO.fromJson(
-              Map<String, dynamic>.from(json['comment'] as Map)),
+      like: (json['like'] as List<dynamic>?)
+              ?.map((e) => LikeVO.fromJson(Map<String, dynamic>.from(e as Map)))
+              .toList() ??
+          const [],
+      comment: (json['comment'] as List<dynamic>?)
+              ?.map((e) =>
+                  CommentVO.fromJson(Map<String, dynamic>.from(e as Map)))
+              .toList() ??
+          const [],
       isVideoFile: json['is_video_file'] as bool? ?? false,
     );
 
@@ -32,7 +34,7 @@ Map<String, dynamic> _$MomentVOToJson(MomentVO instance) => <String, dynamic>{
       'moment_file_url': instance.momentFileUrl,
       'content': instance.content,
       'uploaded_time': instance.uploadedTime,
-      'like': instance.like?.toJson(),
-      'comment': instance.comment?.toJson(),
+      'like': instance.like?.map((e) => e.toJson()).toList(),
+      'comment': instance.comment?.map((e) => e.toJson()).toList(),
       'is_video_file': instance.isVideoFile,
     };
