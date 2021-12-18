@@ -1,8 +1,4 @@
-import 'dart:ui';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:we_chat/pages/login_page.dart';
 import 'package:we_chat/pages/sign_up_page.dart';
 import 'package:we_chat/resources/colors.dart';

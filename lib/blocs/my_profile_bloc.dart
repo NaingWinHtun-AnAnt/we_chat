@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
+import 'package:we_chat/analytics/firebase_analytics_tracker.dart';
 import 'package:we_chat/data/models/auth_model.dart';
 import 'package:we_chat/data/models/auth_model_impl.dart';
 import 'package:we_chat/data/models/user_model.dart';
 import 'package:we_chat/data/models/user_model_impl.dart';
 import 'package:we_chat/data/vos/user_vo.dart';
+import 'package:we_chat/network/firebase_constants.dart';
 
 class MyProfileBloc extends ChangeNotifier {
   /// control dispose
@@ -21,6 +23,9 @@ class MyProfileBloc extends ChangeNotifier {
       user = value;
       _notifySafety();
     });
+
+    /// log my profile reach
+    FirebaseAnalyticsTracker().logEvent(loginUserProfileScreenReached);
   }
 
   Future onTapLogout() {

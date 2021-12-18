@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:we_chat/data/models/auth_model.dart';
 import 'package:we_chat/data/vos/user_vo.dart';
+import 'package:we_chat/fcm/fcm_service.dart';
 import 'package:we_chat/network/agents/cloud_fire_store_data_agent_impl.dart';
 import 'package:we_chat/network/agents/we_chat_cloud_firestore_data_agent.dart';
 import 'package:we_chat/network/firebase_constants.dart';
@@ -34,8 +35,11 @@ class AuthModelImpl extends AuthModel {
     }
   }
 
-  Future<UserVO> _craftUserVO(UserVO? user, {String? imageUrl}) {
+  Future<UserVO> _craftUserVO(UserVO? user, {String? imageUrl}) async {
     final newUser = user;
+    await FCMService().getFCMToken().then((value) {
+      newUser?.fcmToken = value;
+    });
     if (imageUrl != null) {
       newUser?.imagePath = imageUrl;
     }
@@ -44,7 +48,17 @@ class AuthModelImpl extends AuthModel {
 
   @override
   Future login(String email, String password) {
-    return _mDataAgent.login(email, password);
+    return _mDataAgent.login(email, password).then(
+          (value) => _mDataAgent
+              .getLoginUser()
+              .then(
+                (loginUser) => _craftUserVO(loginUser),
+              )
+              .then(
+                (loginUserWithFCMToken) =>
+                    _mDataAgent.updateUserFcmToken(loginUserWithFCMToken),
+              ),
+        );
   }
 
   @override

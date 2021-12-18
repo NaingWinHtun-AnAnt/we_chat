@@ -1,5 +1,6 @@
 const weChat = "WeChat";
 const moments = "Moments";
+const momentDetail = "Moment Detail";
 const contacts = "Contacts";
 const discover = "Discover";
 const me = "Me";
@@ -88,3 +89,9 @@ const emailVerificationInfo = "Enter verification information";
 /// image resources
 const takeFromCamera = "Take Picture";
 const selectFromGallery = "Select From Gallery";
+
+/// notification title and body
+const likeNotificationTitle = "You've got a Like";
+const likeNotificationBody = "give a like your moment!";
+const commentNotificationTitle = "You've got a New Comment";
+const commentNotificationBody = "add a new comment to your moment.";

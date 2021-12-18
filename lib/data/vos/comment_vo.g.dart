@@ -7,7 +7,7 @@ part of 'comment_vo.dart';
 // **************************************************************************
 
 CommentVO _$CommentVOFromJson(Map<String, dynamic> json) => CommentVO(
-      id: json['id'] as int,
+      id: json['id'] as String,
       userName: json['userName'] as String?,
       comment: json['comment'] as String?,
     );

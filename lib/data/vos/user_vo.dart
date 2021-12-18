@@ -28,6 +28,9 @@ class UserVO {
   @JsonKey(name: "organization")
   String? organization;
 
+  @JsonKey(name: "fcm_token")
+  String? fcmToken;
+
   UserVO({
     this.id,
     this.userName,
@@ -37,6 +40,7 @@ class UserVO {
     this.region,
     this.imagePath,
     this.organization,
+    this.fcmToken,
   });
 
   factory UserVO.fromJson(Map<String, dynamic> json) => _$UserVOFromJson(json);

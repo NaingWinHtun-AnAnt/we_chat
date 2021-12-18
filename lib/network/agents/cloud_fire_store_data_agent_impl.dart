@@ -43,7 +43,7 @@ class CloudFireStoreDataAgentImpl extends WeChatCloudFireStoreDataAgent {
         .collection(collectionMoments)
         .doc("$momentId")
         .collection(collectionComments)
-        .doc("${comment.id}")
+        .doc(comment.id)
         .set(
           comment.toJson(),
         );
@@ -56,10 +56,21 @@ class CloudFireStoreDataAgentImpl extends WeChatCloudFireStoreDataAgent {
         .collection(collectionMoments)
         .doc("$momentId")
         .collection(collectionLikes)
-        .doc("${like.id}")
+        .doc(like.id)
         .set(
           like.toJson(),
         );
+  }
+
+  /// remove like
+  @override
+  Future<void> removeMomentLike(int momentId, String likeId) {
+    return _fireStore
+        .collection(collectionMoments)
+        .doc("$momentId")
+        .collection(collectionLikes)
+        .doc(likeId)
+        .delete();
   }
 
   /// get moment list
@@ -190,6 +201,12 @@ class CloudFireStoreDataAgentImpl extends WeChatCloudFireStoreDataAgent {
           ),
         )
         .first;
+  }
+
+  /// update login user fcm token after login
+  @override
+  void updateUserFcmToken(UserVO loginUser) {
+    _addNewUser(loginUser);
   }
 
   @override

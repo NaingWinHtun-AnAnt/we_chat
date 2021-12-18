@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:we_chat/analytics/firebase_analytics_tracker.dart';
 import 'package:we_chat/data/models/contact_model.dart';
 import 'package:we_chat/data/models/contact_model_impl.dart';
 import 'package:we_chat/data/models/user_model.dart';
 import 'package:we_chat/data/models/user_model_impl.dart';
 import 'package:we_chat/data/vos/contact_vo.dart';
+import 'package:we_chat/network/firebase_constants.dart';
 
 class ContactBloc extends ChangeNotifier {
   /// control dispose
@@ -25,6 +27,9 @@ class ContactBloc extends ChangeNotifier {
             },
           ),
         );
+
+    /// log contact list page reach
+    FirebaseAnalyticsTracker().logEvent(contactScreenReached);
   }
 
   /// use notifyListener safely

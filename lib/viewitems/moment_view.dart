@@ -1,7 +1,5 @@
 import 'package:flick_video_player/flick_video_player.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:video_player/video_player.dart';
 import 'package:we_chat/data/vos/comment_vo.dart';
 import 'package:we_chat/data/vos/like_vo.dart';
@@ -13,16 +11,20 @@ import 'package:we_chat/widgets/image_view.dart';
 import 'package:we_chat/widgets/vertical_list_view.dart';
 
 class MomentView extends StatelessWidget {
+  final bool alreadyLike;
   final MomentVO? moment;
   final List<LikeVO>? likeUserList;
   final List<CommentVO>? commentList;
-  final Function(int) onTapLike;
+  final Function(int) onTapMoment;
+  final Function(MomentVO) onTapLike;
   final Function(int) onTapComment;
   final Function(int) onTapEdit;
   final Function(int) onTapDelete;
 
   const MomentView({
     Key? key,
+    required this.alreadyLike,
+    required this.onTapMoment,
     required this.moment,
     required this.likeUserList,
     required this.commentList,
@@ -34,50 +36,54 @@ class MomentView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        vertical: marginMedium2,
-      ),
-      color: colorWhite,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ContentView(
-            moment: moment,
-          ),
-          const SizedBox(
-            height: marginMedium2,
-          ),
-          MomentFileView(
-            momentFileUrl: moment?.momentFileUrl,
-            isVideoFile: moment?.isVideoFile ?? false,
-          ),
-          OptionsButtonSectionView(
-            onTapLike: () => onTapLike(moment?.id ?? 0),
-            onTapComment: () => onTapComment(moment?.id ?? 0),
-            onTapEdit: () => onTapEdit(moment?.id ?? 0),
-            onTapDelete: () => onTapDelete(moment?.id ?? 0),
-          ),
-          const SizedBox(
-            height: marginMedium2,
-          ),
-          Container(
-            height: marginSmall,
-            color: colorGrey3,
-          ),
-          const SizedBox(
-            height: marginMedium2,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(
-              left: momentViewImageSize,
+    return GestureDetector(
+      onTap: () => onTapMoment(moment?.id ?? 0),
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          vertical: marginMedium2,
+        ),
+        color: Colors.transparent,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ContentView(
+              moment: moment,
             ),
-            child: LikeAndCommentSectionView(
-              likeUserList: likeUserList,
-              commentList: commentList,
+            const SizedBox(
+              height: marginMedium2,
             ),
-          ),
-        ],
+            MomentFileView(
+              momentFileUrl: moment?.momentFileUrl,
+              isVideoFile: moment?.isVideoFile ?? false,
+            ),
+            OptionsButtonSectionView(
+              alreadyLike: alreadyLike,
+              onTapLike: () => onTapLike(moment ?? MomentVO(id: 0)),
+              onTapComment: () => onTapComment(moment?.id ?? 0),
+              onTapEdit: () => onTapEdit(moment?.id ?? 0),
+              onTapDelete: () => onTapDelete(moment?.id ?? 0),
+            ),
+            const SizedBox(
+              height: marginMedium2,
+            ),
+            Container(
+              height: marginSmall,
+              color: colorGrey3,
+            ),
+            const SizedBox(
+              height: marginMedium2,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                left: momentViewImageSize,
+              ),
+              child: LikeAndCommentSectionView(
+                likeUserList: likeUserList,
+                commentList: commentList,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -128,6 +134,7 @@ class MomentFileView extends StatelessWidget {
 }
 
 class OptionsButtonSectionView extends StatelessWidget {
+  final bool alreadyLike;
   final Function onTapLike;
   final Function onTapComment;
   final Function onTapEdit;
@@ -135,6 +142,7 @@ class OptionsButtonSectionView extends StatelessWidget {
 
   const OptionsButtonSectionView({
     Key? key,
+    required this.alreadyLike,
     required this.onTapLike,
     required this.onTapComment,
     required this.onTapEdit,
@@ -152,8 +160,10 @@ class OptionsButtonSectionView extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: () => onTapLike(),
-            child: const Icon(
-              Icons.favorite_border_rounded,
+            child: Icon(
+              alreadyLike
+                  ? Icons.favorite_rounded
+                  : Icons.favorite_border_rounded,
               color: colorGrey3,
             ),
           ),
@@ -291,7 +301,7 @@ class LikeAndCommentSectionView extends StatelessWidget {
                   ? likeUserList
                           ?.reduce(
                             (value, element) => LikeVO(
-                              id: 213134,
+                              id: value.id,
                               userName: "${value.userName},${element.userName}",
                             ),
                           )

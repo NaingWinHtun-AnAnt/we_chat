@@ -22,48 +22,29 @@ class MomentModelImpl extends MomentModel {
 
   /// create your moment
   @override
-  Future<void> createMoment(String? content, File? file, bool isVideoFile) {
+  Future<void> createMoment(
+    String userId,
+    String userName,
+    String? content,
+    File? file,
+    bool isVideoFile,
+  ) {
     if (file != null) {
       return _dataAgent
           .uploadFileToFirebaseStorage(file, folderMomentFile)
           .then(
-            (imageUrl) => craftMomentVO(content,
+            (imageUrl) => craftMomentVO(userId, userName, content,
                     momentImageUrl: imageUrl, isVideoFile: isVideoFile)
                 .then(
               (value) => _dataAgent.createMoment(value),
             ),
           );
     } else {
-      return craftMomentVO(content, isVideoFile: isVideoFile).then(
+      return craftMomentVO(userId, userName, content, isVideoFile: isVideoFile)
+          .then(
         (value) => _dataAgent.createMoment(value),
       );
     }
-  }
-
-  @override
-  Future<void> editMoment(MomentVO moment, File? file) {
-    if (file != null) {
-      return _dataAgent
-          .uploadFileToFirebaseStorage(file, folderMomentFile)
-          .then((imageUrl) {
-        moment.momentFileUrl = imageUrl;
-        _dataAgent.createMoment(moment);
-      });
-    } else {
-      return _dataAgent.createMoment(moment);
-    }
-  }
-
-  /// add your comment for moment
-  @override
-  Future<void> addNewComment(int momentId, CommentVO comment) {
-    return _dataAgent.addNewComment(momentId, comment);
-  }
-
-  /// give a like to moment
-  @override
-  Future<void> addMomentLike(int momentId, LikeVO like) {
-    return _dataAgent.addMomentLike(momentId, like);
   }
 
   /// get all moments
@@ -72,22 +53,28 @@ class MomentModelImpl extends MomentModel {
     return _dataAgent.getMoments();
   }
 
-  /// retrieve comment
-  @override
-  Stream<List<CommentVO>> getMomentComment(int momentId) {
-    return _dataAgent.getMomentComment(momentId);
-  }
-
-  /// retrieve likes
-  @override
-  Stream<List<LikeVO>> getMomentLike(int momentId) {
-    return _dataAgent.getMomentLike(momentId);
-  }
-
   /// get a single moment
   @override
   Stream<MomentVO> getMoment(int momentId) {
     return _dataAgent.getMoment(momentId);
+  }
+
+  @override
+  Future<void> editMoment(MomentVO? moment, {File? file}) {
+    if (file != null) {
+      return _dataAgent
+          .uploadFileToFirebaseStorage(file, folderMomentFile)
+          .then((imageUrl) {
+        moment?.momentFileUrl = imageUrl;
+        if (moment != null) _dataAgent.createMoment(moment);
+      });
+    } else {
+      if (moment != null) {
+        return _dataAgent.createMoment(moment);
+      } else {
+        return Future.error("moment edit with null");
+      }
+    }
   }
 
   /// delete moment
@@ -96,12 +83,47 @@ class MomentModelImpl extends MomentModel {
     return _dataAgent.deleteMoment(momentId);
   }
 
-  Future<MomentVO> craftMomentVO(String? content,
-      {String? momentImageUrl, required bool isVideoFile}) {
+  /// add your comment for moment
+  @override
+  Future<void> addNewComment(int momentId, CommentVO comment) {
+    return _dataAgent.addNewComment(momentId, comment);
+  }
+
+  /// retrieve comment
+  @override
+  Stream<List<CommentVO>> getMomentComment(int momentId) {
+    return _dataAgent.getMomentComment(momentId);
+  }
+
+  /// give a like to moment
+  @override
+  Future<void> addMomentLike(int momentId, LikeVO like) {
+    return _dataAgent.addMomentLike(momentId, like);
+  }
+
+  @override
+  Future<void> removeMomentLike(int momentId, String likeId) {
+    return _dataAgent.removeMomentLike(momentId, likeId);
+  }
+
+  /// retrieve likes
+  @override
+  Stream<List<LikeVO>> getMomentLike(int momentId) {
+    return _dataAgent.getMomentLike(momentId);
+  }
+
+  Future<MomentVO> craftMomentVO(
+    String userId,
+    String userName,
+    String? content, {
+    String? momentImageUrl,
+    required bool isVideoFile,
+  }) {
     if (content != null) {
       final moment = MomentVO(
         id: DateTime.now().millisecondsSinceEpoch,
-        userName: "Naing Win Htun",
+        userId: userId,
+        userName: userName,
         content: content,
         momentFileUrl: momentImageUrl,
         userImageUrl: dummyNetworkImage,

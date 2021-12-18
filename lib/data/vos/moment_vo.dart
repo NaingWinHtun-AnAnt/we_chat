@@ -1,4 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:we_chat/data/vos/comment_vo.dart';
+import 'package:we_chat/data/vos/like_vo.dart';
 import 'package:we_chat/utils/handle_date_time.dart';
 
 part 'moment_vo.g.dart';
@@ -8,31 +10,43 @@ class MomentVO {
   @JsonKey(name: "id")
   int id;
 
-  @JsonKey(name: "userName")
+  @JsonKey(name: "user_id")
+  String? userId;
+
+  @JsonKey(name: "user_name")
   String? userName;
 
-  @JsonKey(name: "userImageUrl")
+  @JsonKey(name: "user_image_url")
   String? userImageUrl;
 
-  @JsonKey(name: "momentFileUrl")
+  @JsonKey(name: "moment_file_url")
   String? momentFileUrl;
 
   @JsonKey(name: "content")
   String? content;
 
-  @JsonKey(name: "uploadedTime")
+  @JsonKey(name: "uploaded_time")
   String? uploadedTime;
 
-  @JsonKey(name: "isVideoFile")
+  @JsonKey(name: "like")
+  LikeVO? like;
+
+  @JsonKey(name: "comment")
+  CommentVO? comment;
+
+  @JsonKey(name: "is_video_file")
   bool isVideoFile;
 
   MomentVO({
     required this.id,
+    this.userId,
     this.userName,
     this.userImageUrl,
     this.momentFileUrl,
     this.content,
     this.uploadedTime,
+    this.like,
+    this.comment,
     this.isVideoFile = false,
   });
 

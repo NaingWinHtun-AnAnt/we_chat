@@ -7,15 +7,11 @@ part of 'like_vo.dart';
 // **************************************************************************
 
 LikeVO _$LikeVOFromJson(Map json) => LikeVO(
-      id: json['id'] as int,
-      userName: json['userName'] as String?,
-      imagePath: json['imagePath'] as String?,
-      userId: json['userId'] as int?,
+      id: json['id'] as String,
+      userName: json['user_name'] as String?,
     );
 
 Map<String, dynamic> _$LikeVOToJson(LikeVO instance) => <String, dynamic>{
       'id': instance.id,
-      'userName': instance.userName,
-      'imagePath': instance.imagePath,
-      'userId': instance.userId,
+      'user_name': instance.userName,
     };

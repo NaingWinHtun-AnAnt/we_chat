@@ -1,12 +1,14 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:we_chat/analytics/firebase_analytics_tracker.dart';
 import 'package:we_chat/data/models/chat_model.dart';
 import 'package:we_chat/data/models/chat_model_impl.dart';
 import 'package:we_chat/data/models/user_model.dart';
 import 'package:we_chat/data/models/user_model_impl.dart';
 import 'package:we_chat/data/vos/message_vo.dart';
 import 'package:we_chat/data/vos/user_vo.dart';
+import 'package:we_chat/network/firebase_constants.dart';
 
 class ChatBloc extends ChangeNotifier {
   /// control dispose
@@ -22,13 +24,14 @@ class ChatBloc extends ChangeNotifier {
   /// models
   final ChatModel _chatModel = ChatModelImpl();
   final UserModel _userModel = UserModelImpl();
+  final FirebaseAnalyticsTracker _analyticsTracker = FirebaseAnalyticsTracker();
 
   ChatBloc(String contactUserId) {
     _userModel.getUser().then((value) {
       loginUser = value;
       _notifySafety();
 
-      /// user my user out of getUser block
+      /// use my user out of getUser block
       /// user is null
       _chatModel
           .getMessages(
@@ -42,6 +45,9 @@ class ChatBloc extends ChangeNotifier {
         },
       );
     });
+
+    /// log chat page reach
+    FirebaseAnalyticsTracker().logEvent(chatScreenReached);
   }
 
   void onMessageTextChange(String message) {
@@ -77,7 +83,15 @@ class ChatBloc extends ChangeNotifier {
       text = null;
       selectedFile = null;
       _notifySafety();
-    });
+    }).then(
+      (value) =>
+
+          /// log send message event to contact user
+          _analyticsTracker.logEvent(
+        sendMessageAction,
+        parameters: {logUserId: contactUserId},
+      ),
+    );
   }
 
   /// use notifyListener safely

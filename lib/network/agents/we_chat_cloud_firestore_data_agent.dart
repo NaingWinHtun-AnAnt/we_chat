@@ -16,6 +16,9 @@ abstract class WeChatCloudFireStoreDataAgent {
   /// add like
   Future<void> addMomentLike(int momentId, LikeVO like);
 
+  /// remove like
+  Future<void> removeMomentLike(int momentId, String likeId);
+
   /// get all moments
   Stream<List<MomentVO>> getMoments();
 
@@ -45,6 +48,9 @@ abstract class WeChatCloudFireStoreDataAgent {
 
   /// get current login user info
   Future<UserVO> getLoginUser();
+
+  /// update login user fcm token after login
+  void updateUserFcmToken(UserVO loginUser);
 
   /// get user by scan user id
   Stream<UserVO> getUserById(String userId);

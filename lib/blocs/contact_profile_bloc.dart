@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:we_chat/analytics/firebase_analytics_tracker.dart';
 import 'package:we_chat/data/models/user_model.dart';
 import 'package:we_chat/data/models/user_model_impl.dart';
 import 'package:we_chat/data/vos/user_vo.dart';
+import 'package:we_chat/network/firebase_constants.dart';
 
 class ContactProfileBloc extends ChangeNotifier {
   /// control dispose
@@ -18,6 +20,9 @@ class ContactProfileBloc extends ChangeNotifier {
       contactUser = event;
       _notifySafety();
     });
+
+    /// log contact user profile page reach
+    FirebaseAnalyticsTracker().logEvent(contactUserProfileScreenReached);
   }
 
   /// use notifyListener safely

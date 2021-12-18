@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:we_chat/blocs/chat_bloc.dart';
@@ -62,7 +61,7 @@ class ChatPage extends StatelessWidget {
                 reverse: true,
                 padding: const EdgeInsets.only(
                   top: marginMedium,
-                  bottom: chatControlHeight + marginMedium3,
+                  bottom: textControlHeight + marginMedium3,
                 ),
                 itemBuilder: (BuildContext context, int index) =>
                     Consumer<ChatBloc>(
@@ -169,7 +168,7 @@ class ChatControlView extends StatelessWidget {
               ),
               Flexible(
                 child: SizedBox(
-                  height: chatControlHeight,
+                  height: textControlHeight,
                   child: TextFormField(
                     onChanged: (value) => onTextChange(value),
                     onFieldSubmitted: (value) => onTapSend(),

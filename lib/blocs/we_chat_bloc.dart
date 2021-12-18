@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:we_chat/analytics/firebase_analytics_tracker.dart';
 import 'package:we_chat/data/models/contact_model.dart';
 import 'package:we_chat/data/models/contact_model_impl.dart';
 import 'package:we_chat/data/models/conversation_model.dart';
@@ -7,6 +8,7 @@ import 'package:we_chat/data/models/user_model.dart';
 import 'package:we_chat/data/models/user_model_impl.dart';
 import 'package:we_chat/data/vos/message_vo.dart';
 import 'package:we_chat/data/vos/user_vo.dart';
+import 'package:we_chat/network/firebase_constants.dart';
 
 class WeChatBloc extends ChangeNotifier {
   /// dispose control
@@ -36,6 +38,9 @@ class WeChatBloc extends ChangeNotifier {
         });
       });
     });
+
+    /// log we chat page reach event
+    FirebaseAnalyticsTracker().logEvent(weChatScreenReached);
   }
 
   void _notifySafety() {

@@ -1,7 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
+import 'package:we_chat/blocs/discover_bloc.dart';
 import 'package:we_chat/pages/moment_page.dart';
 import 'package:we_chat/resources/colors.dart';
 import 'package:we_chat/resources/dimens.dart';
@@ -14,29 +13,32 @@ class DiscoverPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: colorPrimary,
-        centerTitle: true,
-        title: const Text(discover),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            DiscoverMomentSectionView(
-              onTap: () => _navigateToMomentPage(context),
-            ),
-            const SizedBox(
-              height: marginMedium,
-            ),
-            const DiscoverFilterGridView(),
-            const SizedBox(
-              height: marginMedium,
-            ),
-            const GameSectionView(),
-          ],
+    return ChangeNotifierProvider(
+      create: (BuildContext context) => DiscoverBloc(),
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: colorPrimary,
+          centerTitle: true,
+          title: const Text(discover),
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DiscoverMomentSectionView(
+                onTap: () => _navigateToMomentPage(context),
+              ),
+              const SizedBox(
+                height: marginMedium,
+              ),
+              const DiscoverFilterGridView(),
+              const SizedBox(
+                height: marginMedium,
+              ),
+              const GameSectionView(),
+            ],
+          ),
         ),
       ),
     );
@@ -105,17 +107,33 @@ class DiscoverFilterGridView extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
-            IconAndTextView(icon: Icons.qr_code, text: "Scan QrCode",),
-            SizedBox(height: marginMedium3,),
-            IconAndTextView(icon: Icons.local_drink_rounded, text: "Drift Bottles",),
+            IconAndTextView(
+              icon: Icons.qr_code,
+              text: "Scan QrCode",
+            ),
+            SizedBox(
+              height: marginMedium3,
+            ),
+            IconAndTextView(
+              icon: Icons.local_drink_rounded,
+              text: "Drift Bottles",
+            ),
           ],
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
-            IconAndTextView(icon: Icons.aod_rounded, text: "Shake",),
-            SizedBox(height: marginMedium3,),
-            IconAndTextView(icon: Icons.near_me_rounded, text: "People Near Me",),
+            IconAndTextView(
+              icon: Icons.aod_rounded,
+              text: "Shake",
+            ),
+            SizedBox(
+              height: marginMedium3,
+            ),
+            IconAndTextView(
+              icon: Icons.near_me_rounded,
+              text: "People Near Me",
+            ),
           ],
         ),
       ],
@@ -128,14 +146,16 @@ class IconAndTextView extends StatelessWidget {
   final String text;
 
   const IconAndTextView({
-    Key? key, required this.icon, required this.text,
+    Key? key,
+    required this.icon,
+    required this.text,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
-      children:  [
+      children: [
         Icon(
           icon,
           color: colorGrey3,
@@ -143,7 +163,10 @@ class IconAndTextView extends StatelessWidget {
         const SizedBox(
           width: marginMedium,
         ),
-        Text(text,style: const TextStyle(color: colorGrey3),),
+        Text(
+          text,
+          style: const TextStyle(color: colorGrey3),
+        ),
       ],
     );
   }
@@ -312,8 +335,10 @@ class SuggestGameView extends StatelessWidget {
           ),
           Text(
             "Game One",
-            style: TextStyle(color: colorGrey2,
-            fontSize: textRegular,),
+            style: TextStyle(
+              color: colorGrey2,
+              fontSize: textRegular,
+            ),
           ),
         ],
       ),

@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:we_chat/blocs/my_profile_bloc.dart';
 import 'package:we_chat/data/vos/user_vo.dart';
@@ -46,9 +44,13 @@ class MyProfilePage extends StatelessWidget {
                   user: bloc.user,
                 ),
               ),
-              const SizedBox(height: marginMedium2,),
+              const SizedBox(
+                height: marginMedium2,
+              ),
               const UserDataView(),
-              const SizedBox(height: marginMedium3,),
+              const SizedBox(
+                height: marginMedium3,
+              ),
               const SizedBox(
                 height: marginMedium2,
               ),
@@ -228,7 +230,9 @@ class UserInfoAndForwardIconView extends StatelessWidget {
               Icons.qr_code,
             ),
           ),
-          const SizedBox(width: marginSmall,),
+          const SizedBox(
+            width: marginSmall,
+          ),
           const Icon(
             Icons.arrow_forward_ios_rounded,
             size: forwardIconSize,

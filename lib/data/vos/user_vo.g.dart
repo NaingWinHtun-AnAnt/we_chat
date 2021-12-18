@@ -15,6 +15,7 @@ UserVO _$UserVOFromJson(Map json) => UserVO(
       region: json['region'] as String?,
       imagePath: json['imagePath'] as String?,
       organization: json['organization'] as String?,
+      fcmToken: json['fcm_token'] as String?,
     );
 
 Map<String, dynamic> _$UserVOToJson(UserVO instance) => <String, dynamic>{
@@ -26,4 +27,5 @@ Map<String, dynamic> _$UserVOToJson(UserVO instance) => <String, dynamic>{
       'region': instance.region,
       'imagePath': instance.imagePath,
       'organization': instance.organization,
+      'fcm_token': instance.fcmToken,
     };

@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:we_chat/blocs/contact_profile_bloc.dart';
 import 'package:we_chat/data/vos/user_vo.dart';

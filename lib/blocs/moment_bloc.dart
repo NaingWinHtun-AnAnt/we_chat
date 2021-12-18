@@ -1,11 +1,18 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
+import 'package:we_chat/analytics/firebase_analytics_tracker.dart';
 import 'package:we_chat/data/models/moment_model.dart';
 import 'package:we_chat/data/models/moment_model_impl.dart';
-import 'package:we_chat/data/vos/comment_vo.dart';
+import 'package:we_chat/data/models/notification_model.dart';
+import 'package:we_chat/data/models/notification_model_impl.dart';
+import 'package:we_chat/data/models/user_model.dart';
+import 'package:we_chat/data/models/user_model_impl.dart';
 import 'package:we_chat/data/vos/like_vo.dart';
 import 'package:we_chat/data/vos/moment_vo.dart';
+import 'package:we_chat/data/vos/user_vo.dart';
+import 'package:we_chat/network/firebase_constants.dart';
+import 'package:we_chat/network/request/data_request.dart';
+import 'package:we_chat/network/request/notification_request.dart';
+import 'package:we_chat/network/request/send_notification_request.dart';
 import 'package:we_chat/resources/strings.dart';
 
 class MomentBloc extends ChangeNotifier {
@@ -13,62 +20,145 @@ class MomentBloc extends ChangeNotifier {
   bool isDispose = false;
 
   /// states
+  UserVO? _loginUser;
   List<MomentVO>? momentList;
-  Map<int, List<CommentVO>?>? commentVOMap = {};
-  Map<int, List<LikeVO>?>? likeVOMap = {};
 
   /// models
   final MomentModel _momentModel = MomentModelImpl();
+  final UserModel _mUserModel = UserModelImpl();
+  final NotificationModel _mNotificationModel = NotificationModelImpl();
+  final FirebaseAnalyticsTracker _analyticsTracker = FirebaseAnalyticsTracker();
 
   MomentBloc() {
     /// get all moments
     _momentModel.getAllMoments().listen((event) {
       momentList = event;
-
-      /// get comment and like for each moment
-      // TODO("map loop not ok")
-      momentList?.forEach((element) {
-        /// retrieve comments
-        _momentModel.getMomentComment(element.id).listen((event) {
-          commentVOMap?[element.id] = event;
-          _notifySafety();
-        });
-
-        /// retrieve like
-        _momentModel.getMomentLike(element.id).listen((event) {
-          likeVOMap = {element.id: event};
-          _notifySafety();
-        });
-      });
       _notifySafety();
     });
+
+    /// get login user for further process
+    _mUserModel.getUser().then((value) => _loginUser = value);
+
+    /// log moment list page reach
+    FirebaseAnalyticsTracker().logEvent(momentListScreenReached);
   }
 
-  /// add comment to moment
-  void onTapMomentLike(int momentId) {
-    final dummyLike = LikeVO(
-      id: DateTime.now().millisecondsSinceEpoch,
-      userId: DateTime.now().millisecondsSinceEpoch,
-      userName: "Naing Win Htun",
-      imagePath: dummyNetworkImage,
-    );
-    _momentModel.addMomentLike(momentId, dummyLike);
-  }
+  /// add like to sub-collection('like') and moment
+  void onTapMomentLike(MomentVO moment) {
+    if (moment.like == null) {
+      final _like = LikeVO(
+        id: _loginUser?.id ?? "",
+        userName: _loginUser?.userName,
+      );
+      _momentModel.addMomentLike(moment.id, _like).then((value) {
+        moment.like = _like;
+        _momentModel.editMoment(moment).then(
+              (value) =>
 
-  /// add like to moment
-  void onTapMomentComment(int momentId) {
-    /// dummy comment
-    final dummyComment = CommentVO(
-      id: DateTime.now().millisecondsSinceEpoch,
-      userName: "Naing Win Htun",
-      comment: "${Random().nextInt(100)} Ok!!",
-    );
-    _momentModel.addNewComment(momentId, dummyComment);
+                  /// send notification
+                  _sendNotification(
+                moment,
+                messageTitle: likeNotificationTitle,
+                messageBody: likeNotificationBody,
+              ),
+            );
+      }).then(
+        (value) =>
+
+            /// log give a like to moment from moment screen
+            _analyticsTracker.logEvent(
+          addMomentLikeFromMomentListScreenAction,
+          parameters: {logMomentId: "${moment.id}"},
+        ),
+      );
+    } else {
+      _momentModel
+          .removeMomentLike(moment.id, _loginUser?.id ?? "")
+          .then((value) {
+        moment.like = null;
+        _momentModel.editMoment(moment);
+      }).then(
+        (value) => _analyticsTracker.logEvent(
+          removeMomentLikeFromMomentListScreenAction,
+          parameters: {logMomentId: "${moment.id}"},
+        ),
+      );
+    }
   }
 
   /// more option
-  void onTapMomentDelete(int momentId) {
-    _momentModel.deleteMoment(momentId);
+  void onTapMomentDelete(int deleteMomentId) {
+    _momentModel.deleteMoment(deleteMomentId).then(
+          (value) =>
+
+              /// log moment delete event
+              _analyticsTracker.logEvent(
+            deleteMomentAction,
+            parameters: {logMomentId: "$deleteMomentId"},
+          ),
+        );
+  }
+
+  void _sendNotification(
+    MomentVO? moment, {
+    required String messageTitle,
+    required String messageBody,
+  }) {
+    if (moment != null) {
+      /// check if user interact with own moment
+      if (_loginUser?.id != moment.userId) {
+        /// get moment owner fcm token and
+        /// craft notification and send to moment owner
+        /// if login userId and moment userId are different
+        _mUserModel.getUserById(moment.userId ?? "").listen((momentUser) {
+          _craftNotification(
+            momentId: moment.id,
+            fcmToken: momentUser.fcmToken ?? "",
+            messageTitle: messageTitle,
+            messageBody: "${_loginUser?.userName} $messageBody",
+          ).then((notification) {
+            if (notification != null) {
+              _mNotificationModel.sendNotification(notification)?.then(
+                    (value) =>
+
+                        /// log send like notification event from moment list
+                        _analyticsTracker.logEvent(
+                      sendLikeNotificationFromMomentListScreenAction,
+                      parameters: {
+                        logMomentCreatorId: moment.userId ?? "",
+                        logMomentId: "${moment.id}",
+                        logUserId: _loginUser?.id ?? "",
+                      },
+                    ),
+                  );
+            }
+          });
+        });
+      }
+    }
+  }
+
+  /// craft notification
+  Future<SendNotificationRequest?> _craftNotification({
+    required int momentId,
+    required String fcmToken,
+    required String messageTitle,
+    required String messageBody,
+  }) {
+    final SendNotificationRequest _notification = SendNotificationRequest(
+      registrationIds: [fcmToken],
+      notification: NotificationRequest(
+        title: messageTitle,
+        body: messageBody,
+      ),
+      dataRequest: DataRequest(
+        title: messageTitle,
+        body: messageBody,
+        momentId: momentId,
+      ),
+    );
+
+    return Future.value(_notification);
   }
 
   /// use notifyListener safely

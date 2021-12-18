@@ -5,7 +5,7 @@ part 'comment_vo.g.dart';
 @JsonSerializable()
 class CommentVO {
   @JsonKey(name: "id")
-  int id;
+  String id;
 
   @JsonKey(name: "userName")
   String? userName;

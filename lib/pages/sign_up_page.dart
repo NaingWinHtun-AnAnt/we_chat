@@ -1,9 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:we_chat/blocs/sign_up_bloc.dart';
@@ -20,129 +17,6 @@ import 'package:we_chat/widgets/header_text_view.dart';
 import 'package:we_chat/widgets/image_view.dart';
 import 'package:we_chat/widgets/region_input_view.dart';
 import 'package:we_chat/widgets/text_input_view.dart';
-
-// class RegisterPage extends StatelessWidget {
-//   const RegisterPage({Key? key}) : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return ChangeNotifierProvider(
-//       create: (BuildContext context) => RegisterBloc(),
-//       child: Scaffold(
-//         body: Selector(
-//           selector: (
-//             BuildContext context,
-//             RegisterBloc bloc,
-//           ) =>
-//               bloc.isLoading,
-//           builder: (
-//             BuildContext context,
-//             bool isLoading,
-//             Widget? child,
-//           ) =>
-//               Stack(
-//             children: [
-//               Center(
-//                 child: SingleChildScrollView(
-//                   child: Container(
-//                     margin: const EdgeInsets.symmetric(
-//                       horizontal: marginMedium2,
-//                     ),
-//                     child: Column(
-//                       mainAxisSize: MainAxisSize.min,
-//                       crossAxisAlignment: CrossAxisAlignment.start,
-//                       children: [
-//                         const Text(
-//                           labelRegister,
-//                           style: TextStyle(
-//                             fontWeight: FontWeight.bold,
-//                             fontSize: textBig,
-//                           ),
-//                         ),
-//                         const SizedBox(
-//                           height: marginXXLarge,
-//                         ),
-//                         Consumer(
-//                           builder: (BuildContext context, RegisterBloc bloc,
-//                                   Widget? child) =>
-//                               LabelAndTextFieldView(
-//                             label: labelEmail,
-//                             hint: hintEmail,
-//                             onChanged: (value) => bloc.onEmailChanged(value),
-//                           ),
-//                         ),
-//                         const SizedBox(
-//                           height: marginXLarge,
-//                         ),
-//                         Consumer(
-//                           builder: (BuildContext context, RegisterBloc bloc,
-//                                   Widget? child) =>
-//                               LabelAndTextFieldView(
-//                             label: labelUserName,
-//                             hint: hintUserName,
-//                             onChanged: (value) => bloc.onUserNameChanged(value),
-//                           ),
-//                         ),
-//                         const SizedBox(
-//                           height: marginXLarge,
-//                         ),
-//                         Consumer(
-//                           builder: (BuildContext context, RegisterBloc bloc,
-//                                   Widget? child) =>
-//                               LabelAndTextFieldView(
-//                             label: labelPassword,
-//                             hint: hintPassword,
-//                             onChanged: (value) => bloc.onPasswordChanged(value),
-//                             isSecure: true,
-//                           ),
-//                         ),
-//                         const SizedBox(
-//                           height: marginXXLarge,
-//                         ),
-//                         Consumer(
-//                           builder: (BuildContext context, RegisterBloc bloc,
-//                                   Widget? child) =>
-//                               RoundCornerButtonView(
-//                             onTap: () {
-//                               bloc
-//                                   .onTapRegister()
-//                                   .then(
-//                                     (value) => Navigator.of(context).pop(),
-//                                   )
-//                                   .catchError(
-//                                     (error) => showSnackBarWithMessage(
-//                                       context,
-//                                       error.toString(),
-//                                     ),
-//                                   );
-//                             },
-//                             text: labelRegister,
-//                           ),
-//                         ),
-//                         const SizedBox(
-//                           height: marginLarge,
-//                         ),
-//                         const ORView(),
-//                         const SizedBox(
-//                           height: marginLarge,
-//                         ),
-//                         const LoginTriggerView()
-//                       ],
-//                     ),
-//                   ),
-//                 ),
-//               ),
-//               Visibility(
-//                 visible: isLoading,
-//                 child: const LoadingView(),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 class SignUpPage extends StatelessWidget {
   const SignUpPage({Key? key}) : super(key: key);

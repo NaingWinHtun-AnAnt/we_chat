@@ -1,9 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:we_chat/analytics/firebase_analytics_tracker.dart';
 import 'package:we_chat/data/models/moment_model.dart';
 import 'package:we_chat/data/models/moment_model_impl.dart';
+import 'package:we_chat/data/models/user_model.dart';
+import 'package:we_chat/data/models/user_model_impl.dart';
 import 'package:we_chat/data/vos/moment_vo.dart';
+import 'package:we_chat/network/firebase_constants.dart';
 
 class AddNewMomentBloc extends ChangeNotifier {
   /// controls
@@ -21,6 +25,10 @@ class AddNewMomentBloc extends ChangeNotifier {
 
   /// models
   final MomentModel _mMomentModel = MomentModelImpl();
+  final UserModel _mUserModel = UserModelImpl();
+
+  /// analytics tracker
+  final FirebaseAnalyticsTracker _analyticsTracker = FirebaseAnalyticsTracker();
 
   AddNewMomentBloc({int? momentId}) {
     if (momentId != null) {
@@ -33,6 +41,9 @@ class AddNewMomentBloc extends ChangeNotifier {
         _notifySafety();
       });
     }
+
+    /// log qrScreen reach
+    FirebaseAnalyticsTracker().logEvent(createMomentScreenReached);
   }
 
   void onNewMomentTextChanged(String postDescription) {
@@ -79,16 +90,32 @@ class AddNewMomentBloc extends ChangeNotifier {
     moment?.content = content;
     moment?.momentFileUrl = momentFileUrl;
     if (moment != null) {
-      return _mMomentModel.editMoment(moment!, chosenFile);
+      return _mMomentModel.editMoment(moment!, file: chosenFile).then(
+            (value) => _analyticsTracker.logEvent(
+              editMomentAction,
+              parameters: {logMomentId: "${moment?.id}"},
+            ),
+          );
     } else {
       return Future.error("Edit Moment Null Error!!");
     }
   }
 
-  Future<void> _createNewMoment() => _mMomentModel.createMoment(
-        content,
-        chosenFile,
-        isVideoFile,
+  Future<void> _createNewMoment() => _mUserModel.getUser().then(
+        (user) => _mMomentModel
+            .createMoment(
+              user.id ?? "",
+              user.userName ?? "",
+              content,
+              chosenFile,
+              isVideoFile,
+            )
+            .then(
+              (value) => _analyticsTracker.logEvent(
+                addNewMomentAction,
+                parameters: {logMomentCreatorId: user.id ?? ""},
+              ),
+            ),
       );
 
   void _notifySafety() {

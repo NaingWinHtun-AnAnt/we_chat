@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:we_chat/blocs/moment_bloc.dart';
+import 'package:we_chat/data/vos/comment_vo.dart';
+import 'package:we_chat/data/vos/like_vo.dart';
+import 'package:we_chat/data/vos/moment_vo.dart';
 import 'package:we_chat/pages/add_new_moment_page.dart';
+import 'package:we_chat/pages/moment_detail_page.dart';
 import 'package:we_chat/resources/colors.dart';
 import 'package:we_chat/resources/dimens.dart';
 import 'package:we_chat/resources/strings.dart';
@@ -61,13 +64,25 @@ class MomentPage extends StatelessWidget {
                     int index,
                   ) =>
                       MomentView(
+                    alreadyLike: bloc.momentList?[index].like != null,
                     moment: bloc.momentList?[index],
-                    commentList: bloc.commentVOMap?[bloc.momentList?[index].id],
-                    likeUserList: bloc.likeVOMap?[bloc.momentList?[index].id],
-                    onTapLike: (momentId) =>
-                        _onTapMomentLike(context, momentId),
-                    onTapComment: (momentId) =>
-                        _onTapMomentComment(context, momentId),
+                    commentList: bloc.momentList?[index].comment != null
+                        ? [bloc.momentList?[index].comment ?? CommentVO(id: "")]
+                        : [],
+                    likeUserList: bloc.momentList?[index].like != null
+                        ? [bloc.momentList?[index].like ?? LikeVO(id: '')]
+                        : [],
+                    onTapMoment: (momentId) =>
+                        _navigateToMomentDetailPage(context, momentId),
+                    onTapLike: (moment) => _onTapMomentLike(
+                      context,
+                      moment,
+                    ),
+                    onTapComment: (momentId) => _navigateToMomentDetailPage(
+                      context,
+                      momentId,
+                      isCommentMode: true,
+                    ),
                     onTapEdit: (momentId) =>
                         _onTapMomentEdit(context, momentId),
                     onTapDelete: (momentId) =>
@@ -98,14 +113,21 @@ class MomentPage extends StatelessWidget {
     );
   }
 
-  void _onTapMomentLike(BuildContext context, int momentId) {
-    final bloc = Provider.of<MomentBloc>(context, listen: false);
-    bloc.onTapMomentLike(momentId);
+  void _navigateToMomentDetailPage(BuildContext context, int momentId,
+      {bool isCommentMode = false}) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (BuildContext context) => MomentDetailPage(
+          momentId: momentId,
+          isCommentMode: isCommentMode,
+        ),
+      ),
+    );
   }
 
-  void _onTapMomentComment(BuildContext context, int momentId) {
+  void _onTapMomentLike(BuildContext context, MomentVO? moment) {
     final bloc = Provider.of<MomentBloc>(context, listen: false);
-    bloc.onTapMomentComment(momentId);
+    if (moment != null) bloc.onTapMomentLike(moment);
   }
 
   /// navigate to moment create page with edit mode
@@ -195,7 +217,7 @@ class NotifyMomentView extends StatelessWidget {
         SizedBox(
           height: marginSmall,
         ),
-        NotifyTextView(text: "2 new soments"),
+        NotifyTextView(text: "2 new moments"),
       ],
     );
   }
